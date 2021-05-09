@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,8 +30,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/**/admin/**").hasRole("ADMIN")
                 .antMatchers("/profile").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/", "/one/{id}", "/cartProduct/**", "/cart/**", "/profile/register").permitAll()
+                .antMatchers("/", "/one/**", "/cartProduct/**", "/cart/**", "/profile/register").permitAll()
                 .antMatchers( "/comments/**", "/order", "/category", "/goods/**", "/static/**").permitAll()
+                .antMatchers("/catalog/**", "/order").permitAll()
+                .antMatchers("/img/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                     .formLogin()
@@ -40,8 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .logout()
                     .logoutSuccessUrl("/")
-                    .permitAll()
-        .and().csrf().disable();
+                    .permitAll();
     }
 
     @Override

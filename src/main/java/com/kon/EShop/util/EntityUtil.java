@@ -3,6 +3,8 @@ package com.kon.EShop.util;
 import com.kon.EShop.model.Cart;
 import com.kon.EShop.model.Comment;
 import com.kon.EShop.model.Product;
+import com.kon.EShop.repository.CartRepository;
+import com.kon.EShop.repository.impl.CartImpl;
 import com.kon.EShop.to.BigTo;
 import com.kon.EShop.to.CommentTo;
 import com.kon.EShop.to.ProductTo;
@@ -10,10 +12,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.kon.EShop.util.SecurityUtil.idIfAuthUser;
 
 public class EntityUtil {
     public EntityUtil() {
@@ -27,19 +34,23 @@ public class EntityUtil {
     }
 
     public static ProductTo productInProductTo(Product product) {
-        ProductTo result = new ProductTo(
-            product.getId(),
-            product.getName(),
-            product.getVendor(),
-            product.getVisibility(),
-            product.getDescription(),
-            product.getAmount(),
-            product.getPrice(),
-            product.getPhotos(),
-            product.getBrand(),
-            product.getRating()
-        );
-        return result;
+        ProductTo to = new ProductTo();
+        to.setId(product.getId());
+        to.setName(product.getName());
+        to.setNameUa(product.getNameUa());
+        to.setVendor(product.getVendor());
+        to.setPopular(product.getPopular());
+        to.setDescription(product.getDescription());
+        to.setDescriptionUa(product.getDescriptionUa());
+        to.setAmount(product.getAmount());
+        to.setPrice(product.getPrice());
+        to.setPhotos(product.getPhotos());
+        to.setBrand(product.getBrand());
+        to.setRating(product.getRating());
+        to.setCategory(product.getCategory());
+        to.setMainCategory(product.getMainCategory());
+        to.setManufacture(product.getManufacture());
+        return to;
     }
 
     public static CommentTo getCommentTo(Comment comment) {
@@ -89,7 +100,43 @@ public class EntityUtil {
         return PageRequest.of(p, o, sort1);
     }
 
-    public static BigTo getBigTo(Page<Product> page) {
-        return new BigTo(page.getContent(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
+//    public static BigTo getBigTo(Page<Product> page) {
+//        return new BigTo(page.getContent(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
+//    }
+
+    public static Cart getCartFromSession() {
+        Cart curCart = getFromSession("cart", Cart.class);
+        if (curCart == null){
+            curCart = new Cart();
+            curCart.setUser_id(idIfAuthUser());
+            setToSession("cart", curCart);
+            return curCart;
+        }
+        return curCart;
+    }
+
+    public static Cart getCartFromSession(CartImpl repo) {
+        Cart curCart = getFromSession("cart", Cart.class);
+//        Cart curCart = (Cart) session.getAttribute("cart");
+        if (curCart == null && idIfAuthUser() != null)
+            curCart = repo.getByUser(idIfAuthUser());
+        if (curCart == null){
+            curCart = new Cart();
+            curCart.setUser_id(idIfAuthUser());
+        }
+        setToSession("cart", curCart);
+        return curCart;
+    }
+
+    public static <T> T getFromSession(String paramName, Class<T> clazz) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+        return (T) session.getAttribute(paramName);
+    }
+
+    public static void setToSession(String name, Object object) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession(true);
+        session.setAttribute(name, object);
     }
 }

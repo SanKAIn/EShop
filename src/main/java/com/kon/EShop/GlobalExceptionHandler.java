@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -26,6 +28,11 @@ public class GlobalExceptionHandler {
 
     public GlobalExceptionHandler(MessageSourceAccessor messageSourceAccessor) {
         this.messageSourceAccessor = messageSourceAccessor;
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ModelAndView handleControllerException(HttpServletRequest request, Throwable ex) {
+        return logAndGetExceptionView(request, (Exception) ex, false, ErrorType.WRONG_REQUEST, "Attachment size exceeds the allowable limit! (10MB)");
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)

@@ -56,9 +56,9 @@ public class CategoryImpl {
         List<Category> list2 = new ArrayList<>();
         if (list.size() > 0)
             for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).getParent() == parent){
+                if (list.get(i).getParent().equals(parent)) {
                     Category current = list.get(i);
-                    List<Category> count =  sort(list, current.getId(), level+1);
+                    List<Category> count = sort(list, current.getId(), level + 1);
                     current.setChildren(count.size());
                     current.setLevel(level);
                     list2.add(current);

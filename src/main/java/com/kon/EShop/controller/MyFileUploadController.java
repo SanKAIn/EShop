@@ -2,21 +2,24 @@ package com.kon.EShop.controller;
 
 import com.kon.EShop.model.MyUploadForm;
 import com.kon.EShop.util.FileManager;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
 public class MyFileUploadController {
 
     private FileManager manager;
+
+    @Value("${upload.path}")
+    private String path;
 
     public MyFileUploadController(FileManager manager) {
         this.manager = manager;
@@ -30,34 +33,21 @@ public class MyFileUploadController {
         return "uploadMultiFile";
     }
 
-    @GetMapping("/uploadMultiFile")
-    public String uploadMultiFileHandler(Model model) {
-        MyUploadForm myUploadForm = new MyUploadForm();
-        model.addAttribute("myUploadForm", myUploadForm);
-        return "uploadMultiFile";
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/file")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void delete(@RequestParam String path, @RequestParam(name = "file") String fileName) throws IOException {
+        manager.delete(fileName, path);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/uploadMultiFile")
-    public void uploadMultiFileHandlerPOST(@ModelAttribute("myUploadForm") MyUploadForm myUploadForm) {
-        this.doUpload(myUploadForm);
+//    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public List<String> uploadMultiFileHandlerPOST(@RequestParam String path,
+                                                   @RequestParam MultipartFile[] file) throws IOException {
+        return manager.doUpload(file, path);
 
-    }
-
-    private void doUpload(MyUploadForm myUploadForm) {
-
-        MultipartFile[] fileDataS = myUploadForm.getFileDataS();
-        List<String> uploaded = new ArrayList<>();
-
-        for (MultipartFile fileData : fileDataS) {
-            String name = fileData.getOriginalFilename();
-            if (name != null && name.length() > 0) {
-                try {
-                    uploaded.add(manager.upload(fileData, name, "big"));
-                } catch (Exception e) {
-                    System.out.println("error");
-                }
-            }
-        }
     }
 
 }

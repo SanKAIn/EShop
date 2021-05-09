@@ -1,28 +1,24 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.MyFile;
-import com.kon.EShop.model.MyUploadForm;
-import com.kon.EShop.model.Product;
-import com.kon.EShop.model.Rating;
+import com.kon.EShop.model.*;
+import com.kon.EShop.repository.FiltersRepository;
 import com.kon.EShop.repository.ProductRepository;
-import com.kon.EShop.to.BigTo;
+import com.kon.EShop.to.FiltersTo;
 import com.kon.EShop.to.ProductTo;
 import com.kon.EShop.util.FileManager;
+import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kon.EShop.util.EntityUtil.*;
+import static com.kon.EShop.util.ValidationUtil.checkNotFoundWithId;
 
 @Repository
 public class ProductImpl {
@@ -30,36 +26,36 @@ public class ProductImpl {
     private final EntityManager entityManager;
     private final ProductRepository repository;
     private final FileManager fileManager;
+    private final FiltersRepository filters;
 
-    public ProductImpl(EntityManager entityManager, ProductRepository repository, FileManager fileManager) {
+    public ProductImpl(EntityManager entityManager, ProductRepository repository, FileManager fileManager, FiltersRepository filters) {
         this.entityManager = entityManager;
         this.repository = repository;
         this.fileManager = fileManager;
+        this.filters = filters;
     }
 
-    public BigTo allA(HttpServletRequest request) {
-        return getBigTo(repository.findAllA(getPageable(request)));
+    public Page<Product> findForAdmin(Pageable pageable, Long brandId, Long categoryId, Long mainCategoryId, Long manufacturerId) {
+        return repository.findToAdmin(brandId, categoryId, manufacturerId, mainCategoryId, pageable);
     }
 
-    public BigTo getInvisible(HttpServletRequest request) {
-        Page<Product> list = null;
-        String findBy = request.getParameter("findBy");
-        String key = request.getParameter("key");
-        if (findBy.equals("vendor"))
-            list = repository.getProductsByVendorContainsAndVisibilityFalse(key, getPageable(request));
-        if (findBy.equals("name"))
-            list = repository.getProductsByNameContainsAndVisibilityFalse(key, getPageable(request));
-        if (findBy.equals("all"))
-            list = repository.getProductsByNameContainsAndVisibilityFalseOrVendorContainsAndVisibilityFalse(key, key, getPageable(request));
-        return getBigTo(list);
+    public Page<Product> searchAdmin(Long brandId, Long categoryId, Long manufacturerId, Long mainCatId, String text, Pageable pageable) {
+//        Page<Product> list = null;
+//        if (findBy.equals("vendor"))
+//            list = repository.getProductsByVendorContains(key, pageable);
+//        if (findBy.equals("name"))
+//            list = repository.getProductsByNameContains(key, pageable);
+//        if (findBy.equals("all"))
+//            list = repository.getProductsByNameContainsOrVendorContains(key, key, pageable);
+        return repository.searchAll(brandId, categoryId, manufacturerId, mainCatId, text, pageable);
     }
 
-    public BigTo getAllInvisible(HttpServletRequest request) {
-        return getBigTo(repository.getProductsByVisibilityIsFalse(getPageable(request)));
+    public Page<Product> getAllInvisible(Pageable pageable) {
+        return repository.getProductsByPopularIsFalse(pageable);
     }
 
-    public Product save(Product product){
-        product.getPhotos().forEach(f->f.setProduct(product));
+    public Product save(Product product) {
+        product.getPhotos().forEach(f -> f.setProduct(product));
         return repository.save(product);
     }
 
@@ -69,11 +65,12 @@ public class ProductImpl {
 
     public void updateByCSV(MyUploadForm form) throws IOException {
         for (MultipartFile f : form.getFileDataS()) {
-            if (f.getOriginalFilename().length() > 0) {
+            String name = f.getOriginalFilename();
+            if (name != null && name.length() > 0) {
                 try {
                     MyFile file = fileManager.getMyFile(f, "table.csv", "csv");
                     repository.queryWith(file.getColumnNames(), file.getTableName());
-                }finally {
+                } finally {
                     fileManager.delete("table.csv", "csv");
                 }
             }
@@ -81,8 +78,7 @@ public class ProductImpl {
     }
 
 
-
-    public List<ProductTo> findFive(){
+    public List<ProductTo> findFive() {
         List<Long> collect = new Random().longs(12, 1, 15).distinct().boxed().collect(Collectors.toList());
         List<Product> products = entityManager.createQuery("SELECT p " +
                 "FROM Product p " +
@@ -96,63 +92,57 @@ public class ProductImpl {
         return productInProductTo(products);
     }
 
-    public BigTo allU() {
-        return getBigTo(repository.findAllU(PageRequest.of(0, 12)));
+    public Page<Product> allU(Pageable pageable, Long mainCatId) {
+        return repository.findAllU(pageable, mainCatId);
     }
 
-    public Product findById(long id){
-        return repository.findById(id).get();
+    public Product findById(long id) {
+        return repository.findById(id).orElse(null);
     }
 
-    public List<Product> listProductsForCart(List<Long> ids){
+    public List<Product> listProductsForCart(List<Long> ids) {
         return repository.findList(ids);
     }
 
-    public BigTo findProduct(HttpServletRequest request) {
+    public Page<Product> findProduct(String findBy, String key, Pageable pageable) {
         Page<Product> list = null;
-        String findBy = request.getParameter("findBy");
-        String key = request.getParameter("key");
-            if (findBy.equals("vendor"))
-                list = repository.getProductsByVendorContainsAndVisibilityTrue(key, getPageable(request));
-            if (findBy.equals("contains"))
-                list = repository.findAllByName(key, getPageable(request));
-            if (findBy.equals("all"))
-                list = repository.getProductsByVendorContainsAndVisibilityTrueOrNameContainsAndVisibilityTrue(key, key, getPageable(request));
-        return getBigTo(list);
+        if (findBy.equals("vendor"))
+            list = repository.getProductsByVendorContainsAndPopularTrue(key, pageable);
+        if (findBy.equals("contains"))
+            list = repository.findAllByName(key, pageable);
+        if (findBy.equals("all"))
+            list = repository.getProductsByVendorContainsAndPopularTrueOrNameContainsAndPopularTrue(key, key, pageable);
+        return list;
     }
 
-    public BigTo filterProducts(HttpServletRequest request) {
-        Page<Product> list;
-        String[] brands1 = request.getParameterValues("brands");
-        String[] categories1 = request.getParameterValues("category");
-        List<Long> brands = new ArrayList<>();
-        if (brands1 != null)
-            brands = toLong(brands1);
-        List<Long> categories = new ArrayList<>();
-        if (categories1 != null)
-            categories = toLong(categories1);
-        if (categories.size() > 0 && brands.size() == 0)
-            list = repository.findByCategory(categories, getPageable(request));
-        else if (categories.size() == 0 && brands.size() > 0)
-            list = repository.findByBrands(brands, getPageable(request));
-        else if (categories.size() > 0 && brands.size() > 0)
-            list = repository.findAllByBrandAndCategory(brands, categories, getPageable(request));
+    public Page<Product> filterProducts(Pageable pageable, String[] brands, String[] categories, String[] manufacturer, Long mainCatId) {
+        return repository.findToUser(toLong(brands), toLong(categories), toLong(manufacturer), mainCatId, pageable);
+    }
+
+    public FiltersTo getCount(String[] brands, String[] categories, String[] manufacture, Long mainId) {
+        FiltersTo otv = new FiltersTo(filters.countByAl(toLong(categories), toLong(brands), toLong(manufacture), mainId));
+        /*if (categories == null && brands != null && manufacture != null)
+            otv = new FiltersTo(filters.countNotCategory(toLong(brands), toLong(manufacture), mainId));
+        else if (categories != null && brands == null && manufacture != null)
+            otv = new FiltersTo(filters.countNotBrand(toLong(categories), toLong(manufacture), mainId));
+        else if (categories != null && brands != null && manufacture == null)
+            otv = new FiltersTo(filters.countNotManufacture(toLong(categories), toLong(brands), mainId));
+        else if (categories == null && brands == null && manufacture != null)
+            otv = new FiltersTo(filters.countByManufacture(toLong(manufacture), mainId));
+        else if (categories == null && brands != null && manufacture == null)
+            otv = new FiltersTo(filters.countByBrand(toLong(brands), mainId));
+        else if (categories != null && brands == null && manufacture == null)
+            otv = new FiltersTo(filters.countByCategory(toLong(categories), mainId));
+        else if (categories != null && brands != null && manufacture != null)
+            otv = new FiltersTo(filters.countByAll(toLong(categories), toLong(brands), toLong(manufacture), mainId));
         else
-            list = repository.findAll(getPageable(request));
-        return getBigTo(list);
-    }
-
-    public Integer getCount(String[] brands, String[] categories) {
-        Integer otv;
-        if (categories == null && brands != null) otv = repository.countByBrandIdInAndVisibilityTrue(toLong(brands));
-        else if (categories != null && brands == null) otv = repository.countAllByCategoryIn(toLong(categories));
-        else if (categories != null && brands != null) otv = repository.countAllByCategoryIdInAndBrandIdInAndVisibilityTrue(toLong(categories), toLong(brands));
-        else otv = repository.countAllByVisibilityTrue();
+            otv = new FiltersTo(filters.countByNone(mainId));*/
         return otv;
     }
 
     public void vote(Long id, Integer vote) {
-        Product product = repository.findById(id).get();
+        Product product = repository.findById(id).orElse(null);
+        assert product != null;
         if (product.getRating() == null) product.addRating(new Rating(0, 0));
         int bal = product.getRating().getVotes() * product.getRating().getRating() + vote * 100;
         product.getRating().setVotes(product.getRating().getVotes() + 1);
@@ -165,9 +155,20 @@ public class ProductImpl {
     }
 
     public List<Long> toLong(String[] mas) {
+        if (mas == null) return null;
         return Arrays.stream(mas)
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
+    }
+
+    public void enable(long id, boolean enabled) throws NotFoundException {
+        Product product = checkNotFoundWithId(findById(id), id);
+        product.setPopular(enabled);
+        repository.save(product);
+    }
+
+    public Product getOneAdmin(Long id) {
+        return repository.getOneAdmin(id);
     }
 
 }

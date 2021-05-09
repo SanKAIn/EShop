@@ -75,13 +75,15 @@ public class appConfig implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/exception").setViewName("exception");
     }
-
+//https://www.youtube.com/watch?v=bmMWrTMB5uo&list=PLU2ftbIeotGpAYRP9Iv2KLIwK36-o_qYk&index=9  5:10
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/img/**")
-                .addResourceLocations("file://" + uploadPath + "/");
+        registry.addResourceHandler("/img/**")//обращение к серверу начинающиеся на img
+                .addResourceLocations("file:///" + uploadPath + "/");// перенаправляет сюда
+
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("classpath:/static/");
+
         registry
                 .addResourceHandler("/webjars/**")
                 .addResourceLocations("/webjars/");

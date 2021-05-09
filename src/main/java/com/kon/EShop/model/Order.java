@@ -1,12 +1,13 @@
 package com.kon.EShop.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kon.EShop.HasId;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 @Getter @Setter
@@ -20,7 +21,7 @@ public class Order implements HasId {
     @SequenceGenerator(name= "order_seq", sequenceName = "orders_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="order_seq")
     private Long id;
-
+    private String name;
     private String address;
     private String comment;
     private String phone;

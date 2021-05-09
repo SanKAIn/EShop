@@ -1,18 +1,14 @@
 package com.kon.EShop.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kon.EShop.HasId;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @Getter @Setter
@@ -54,12 +50,9 @@ public class Comment implements HasId {
         Comment comment = (Comment) o;
 
         if (id != comment.id) return false;
-        if (!Objects.equals(description, comment.description))
-            return false;
+        if (!Objects.equals(description, comment.description)) return false;
         if (!Objects.equals(parentId, comment.parentId)) return false;
-        if (!Objects.equals(time, comment.time)) return false;
-
-        return true;
+        return Objects.equals(time, comment.time);
     }
 
     @Override

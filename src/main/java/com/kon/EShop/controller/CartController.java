@@ -1,23 +1,18 @@
 package com.kon.EShop.controller;
 
 import com.kon.EShop.model.Cart;
-import com.kon.EShop.model.User;
+import com.kon.EShop.model.CartProduct;
 import com.kon.EShop.repository.impl.CartImpl;
 import com.kon.EShop.repository.impl.ProductImpl;
 import com.kon.EShop.to.CartTo;
 import com.kon.EShop.to.ProductTo;
 import com.kon.EShop.util.exception.NotFoundException;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
-import static com.kon.EShop.util.EntityUtil.cartAmountToProductsTo;
-import static com.kon.EShop.util.EntityUtil.productInProductTo;
-import static com.kon.EShop.util.SecurityUtil.idIfAuthUser;
+import static com.kon.EShop.util.EntityUtil.*;
 
 @RestController
 @RequestMapping("/cart")
@@ -31,25 +26,27 @@ public class CartController {
         this.cartImpl = cartImpl;
     }
 
-    @GetMapping("/{id}")
-    public CartTo getCart(@PathVariable Long id) throws NotFoundException {
-        List<ProductTo> list = new ArrayList<>();
-        Cart cart = new Cart();
-        if (id > 0) {
-            cart = cartImpl.getCart(id);
-            if (cart == null)
-                throw new NotFoundException("id=" + id);
-            cart.loops();
-            list = productInProductTo(productIml.listProductsForCart(cart.getIds()));
-            cartAmountToProductsTo(list, cart);
-        } else if(id == 0){
-            cart.setUser_id(idIfAuthUser());
-            cartImpl.save(cart);
-        }
-        return new CartTo(cart.getId(), list);
+    @GetMapping
+    public CartTo getCart() throws NotFoundException {
+        Cart curCart = getCartFromSession(cartImpl);
+        List<ProductTo> list = productInProductTo(productIml.listProductsForCart(curCart.getIds()));
+        cartAmountToProductsTo(list, curCart);
+        if (curCart.getUser_id() != null && curCart.isNew()) curCart = cartImpl.save(curCart);
+        return new CartTo(curCart.getId(), list);
     }
 
-//    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/addMas")
+    public void addCartForOrder(@RequestBody List<CartProduct> cart, HttpSession session) {
+        Cart newCart = new Cart();
+        Long userId = (Long) session.getAttribute("userId");
+        for (CartProduct cp: cart) newCart.addCartProduct(cp);
+        newCart.setUser_id(userId);
+        newCart.setOrdered(true);
+        cartImpl.save(newCart);
+        session.setAttribute("cartId", newCart.id());
+    }
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/admin/{id}")
     public long deleteCart(@PathVariable Long id) throws NotFoundException {
         long cartCount = cartImpl.delete(id);

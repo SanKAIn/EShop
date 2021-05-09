@@ -40,6 +40,7 @@ public class BrandController {
             brandImpl.save(brand);
         else
             brandImpl.update(brand);
+
     }
 
     @DeleteMapping("/admin/{id}")
@@ -48,5 +49,11 @@ public class BrandController {
         if (deleted == null)
             throw new NotFoundException("delete Brand not found");
         return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void enable(@PathVariable int id, @RequestParam boolean enabled) throws NotFoundException {
+        brandImpl.enable(id, enabled);
     }
 }

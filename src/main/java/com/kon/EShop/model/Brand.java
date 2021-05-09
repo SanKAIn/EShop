@@ -27,7 +27,7 @@ public class Brand implements HasId {
     @NotNull
     private String name;
     private String label;
-    private Integer popular;
+    private Boolean popular;
     @JsonIgnore
     @OneToMany(mappedBy = "brand", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<Product> product;
@@ -47,9 +47,7 @@ public class Brand implements HasId {
 
         if (id != brands.id) return false;
         if (!Objects.equals(name, brands.name)) return false;
-        if (!Objects.equals(label, brands.label)) return false;
-
-        return true;
+        return Objects.equals(label, brands.label);
     }
 
     @Override

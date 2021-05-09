@@ -17,6 +17,10 @@ public class CartImpl {
         return repository.findCartById(id);
     }
 
+    public Cart getByUser(Long id) {
+        return repository.findByUserId(id);
+    }
+
     public Cart save(Cart cart) {
         return repository.save(cart);
     }
@@ -26,7 +30,6 @@ public class CartImpl {
     }
 
     public long delete(Long id) {
-        long i = repository.deleteCartById(id);
-        return i;
+        return repository.deleteCartById(id);
     }
 }

@@ -20,8 +20,16 @@ public class Cart implements HasId {
 
     private Long user_id;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Boolean ordered;
+
+    @OneToMany(mappedBy = "cart",
+               cascade = CascadeType.ALL,
+               orphanRemoval = true,
+               fetch = FetchType.EAGER)
     private List<CartProduct> cartProducts = new ArrayList<>();
+
+
+
 
     public void addCartProduct(CartProduct product) {
         cartProducts.add(product);

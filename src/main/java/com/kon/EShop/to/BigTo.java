@@ -9,56 +9,43 @@ import java.util.Objects;
 import static com.kon.EShop.util.EntityUtil.productInProductTo;
 
 public class BigTo {
-    private List<ProductTo> goods = new ArrayList<>();
-    private long count;
-    private int pages;
-    private int currentPage;
+    private List<Product> data = new ArrayList<>();
+    private long recordsFiltered;
+    private long RecordsTotal;
+    private int Draw;
 
     public BigTo() {
     }
 
-    public BigTo(List<Product> goods, long count, int pages, int currentPage) {
-        this.goods = productInProductTo(goods);
-        this.count = count;
-        this.pages = pages;
-        this.currentPage = currentPage;
+    public List<Product> getData() {
+        return data;
     }
 
-    public List<ProductTo> getGoods() {
-        return goods;
+    public void setData(List<Product> data) {
+        this.data = data;
     }
 
-    public long getCount() {
-        return count;
+    public long getRecordsFiltered() {
+        return recordsFiltered;
     }
 
-    public int getPages() {
-        return pages;
+    public void setRecordsFiltered(long recordsFiltered) {
+        this.recordsFiltered = recordsFiltered;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
+    public long getRecordsTotal() {
+        return RecordsTotal;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof BigTo)) return false;
-        BigTo bigTo = (BigTo) o;
-        return count == bigTo.count && Objects.equals(goods, bigTo.goods);
+    public void setRecordsTotal(long recordsTotal) {
+        RecordsTotal = recordsTotal;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(goods, count);
+    public int getDraw() {
+        return Draw;
     }
 
-    @Override
-    public String toString() {
-        return "BigTo{" +
-                "goods=" + goods +
-                ", count=" + count +
-                '}';
+    public void setDraw(int draw) {
+        Draw = draw;
     }
-
 }

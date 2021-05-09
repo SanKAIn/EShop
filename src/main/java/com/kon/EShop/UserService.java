@@ -1,11 +1,13 @@
 package com.kon.EShop;
 
+import com.kon.EShop.model.Cart;
+import com.kon.EShop.model.CartProduct;
 import com.kon.EShop.model.User;
+import com.kon.EShop.repository.CartRepository;
 import com.kon.EShop.repository.UserRepository;
 import com.kon.EShop.to.UserTo;
-import com.kon.EShop.util.UserUtil;
+import com.kon.EShop.util.EntityUtil;
 import com.kon.EShop.util.exception.NotFoundException;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -17,9 +19,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
+import static com.kon.EShop.util.EntityUtil.getCartFromSession;
+import static com.kon.EShop.util.EntityUtil.setToSession;
 import static com.kon.EShop.util.UserUtil.prepareToSave;
 import static com.kon.EShop.util.UserUtil.updateFromTo;
 import static com.kon.EShop.util.ValidationUtil.*;
@@ -31,10 +38,12 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final CartRepository cartRepository;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, CartRepository cartRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.cartRepository = cartRepository;
     }
 
     @CacheEvict(value = "users", allEntries = true)
@@ -49,7 +58,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User get(Long id) throws NotFoundException {
-        return checkNotFoundWithId(repository.findById(id).get(), id);
+        return checkNotFoundWithId(repository.findById(id).orElse(null), id);
     }
 
     public User getByEmail(String email) throws NotFoundException {
@@ -91,6 +100,7 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User " + email + " is not found");
         }
+        prepareCart(user.getId());
         return new AuthorizedUser(user);
     }
 
@@ -98,4 +108,26 @@ public class UserService implements UserDetailsService {
         return repository.save(prepareToSave(user, passwordEncoder));
     }
 
+    private void prepareCart(Long id) {
+//        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+//        HttpSession session = attr.getRequest().getSession(true);
+        Cart dbCart = cartRepository.findByUserId(id);
+//        Cart curCart = EntityUtil.getCartFromSession(session);
+        Cart curCart = EntityUtil.getCartFromSession();
+        if (dbCart != null) {
+            List<CartProduct> newList = dbCart.getCartProducts();
+            newList.removeAll(curCart.getCartProducts());
+            newList.addAll(curCart.getCartProducts());
+            curCart.setCartProducts(newList);
+            curCart.setUser_id(dbCart.getUser_id());
+            curCart.setOrdered(false);
+            curCart.setId(dbCart.getId());
+        }
+        setToSession("cart", curCart);
+    }
 }
+
+
+
+
+

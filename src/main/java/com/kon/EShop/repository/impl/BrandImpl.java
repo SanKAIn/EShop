@@ -1,6 +1,7 @@
 package com.kon.EShop.repository.impl;
 
 import com.kon.EShop.model.Brand;
+import com.kon.EShop.model.User;
 import com.kon.EShop.repository.BrandRepository;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.data.domain.Sort;
@@ -44,4 +45,9 @@ public class BrandImpl {
         return repository.deleteBrandById(id);
     }
 
+    public void enable(long id, boolean enabled) throws NotFoundException {
+        Brand brand = checkNotFoundWithId(getBrand(id), id);
+        brand.setPopular(enabled);
+        repository.save(brand);
+    }
 }

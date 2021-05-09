@@ -5,6 +5,7 @@ import com.kon.EShop.repository.impl.OrderImpl;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -23,7 +24,9 @@ public class OrderController {
     }
 
     @PostMapping
-    public Order saveOrder(@RequestBody Order order) {
+    public Order saveOrder(@RequestBody Order order, HttpSession session) {
+        Long cartId = (Long) session.getAttribute("cartId");
+        order.setCartId(cartId);
         return orderImpl.save(order);
     }
 
