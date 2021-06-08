@@ -3,13 +3,14 @@ package com.kon.EShop.to;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kon.EShop.model.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductTo implements Serializable {
     private Long id;
@@ -34,6 +35,8 @@ public class ProductTo implements Serializable {
     private MainCategory mainCategory;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Manufacture manufacture;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Unit unit;
 
     public ProductTo() {
     }

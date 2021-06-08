@@ -1,14 +1,14 @@
 package com.kon.EShop.configuration;
 
-import com.kon.EShop.UserService;
+import com.kon.EShop.service.UserService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -28,22 +28,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/**/admin/**").hasRole("ADMIN")
-                .antMatchers("/profile").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/", "/one/**", "/cartProduct/**", "/cart/**", "/profile/register").permitAll()
-                .antMatchers( "/comments/**", "/order", "/category", "/goods/**", "/static/**").permitAll()
-                .antMatchers("/catalog/**", "/order").permitAll()
-                .antMatchers("/img/**").permitAll()
-                .anyRequest().authenticated()
+                    .antMatchers("/**/admin/**").hasRole("ADMIN")
+                    .antMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
+                    .antMatchers("/**").permitAll()
+                    .antMatchers("/img/**", "/static/**").permitAll()
+                    .anyRequest().authenticated()
+                .and()
+                    .httpBasic()
                 .and()
                     .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
-                    .defaultSuccessUrl("/").failureUrl("/login?error")
+                        .loginPage("/login")
+                        .permitAll()
+                        .defaultSuccessUrl("/").failureUrl("/login?error")
                 .and()
                     .logout()
-                    .logoutSuccessUrl("/")
-                    .permitAll();
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID");
     }
 
     @Override

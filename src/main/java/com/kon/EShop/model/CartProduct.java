@@ -19,7 +19,8 @@ public class CartProduct implements HasId {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="cart_product_seq")
     private Long id;
 
-    private Long product_id;
+    @Column(name = "product_id")
+    private Long productId;
 
     private int amount;
 
@@ -30,20 +31,20 @@ public class CartProduct implements HasId {
     public CartProduct() {
     }
 
-    public CartProduct(Long product_id, int amount) {
-        this.product_id = product_id;
+    public CartProduct(Long productId, int amount) {
+        this.productId = productId;
         this.amount = amount;
     }
 
-    public CartProduct(Long product_id, int amount, Cart cart) {
-        this.product_id = product_id;
+    public CartProduct(Long productId, int amount, Cart cart) {
+        this.productId = productId;
         this.amount = amount;
         this.cart = cart;
     }
 
-    public CartProduct(Long id, Long product_id, int amount) {
+    public CartProduct(Long id, Long productId, int amount) {
         this.id = id;
-        this.product_id = product_id;
+        this.productId = productId;
         this.amount = amount;
     }
 
@@ -52,8 +53,10 @@ public class CartProduct implements HasId {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CartProduct that = (CartProduct) o;
-        return Objects.equals(cart, that.cart) &&
-               Objects.equals(amount, that.amount);
+        boolean b = Objects.equals(cart, that.cart) &&
+                Objects.equals(amount, that.amount) &&
+                Objects.equals(id, that.id);
+        return b;
     }
 
     @Override

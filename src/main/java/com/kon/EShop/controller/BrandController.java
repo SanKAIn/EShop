@@ -5,6 +5,7 @@ import com.kon.EShop.repository.impl.BrandImpl;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,7 +26,7 @@ public class BrandController {
         return brandImpl.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/{id}")
     public Brand get(@PathVariable Long id) throws NotFoundException {
         Brand brand = brandImpl.getBrand(id);
         if (brand == null)
@@ -51,7 +52,7 @@ public class BrandController {
         return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/admin/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void enable(@PathVariable int id, @RequestParam boolean enabled) throws NotFoundException {
         brandImpl.enable(id, enabled);

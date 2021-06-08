@@ -19,11 +19,16 @@ public class Rating implements HasId {
 
     @Id
     @Column(name = "product_id")
+    @SequenceGenerator(name= "rating_seq", sequenceName = "ratings_product_id_seq", allocationSize = 1, initialValue = 100)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="rating_seq")
     private Long id;
 
     private Integer votes;
 
     private Integer rating;
+
+    @Transient
+    private String message;
 
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)

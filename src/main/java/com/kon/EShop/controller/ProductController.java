@@ -1,5 +1,6 @@
 package com.kon.EShop.controller;
 
+import com.kon.EShop.model.CartProduct;
 import com.kon.EShop.model.MyUploadForm;
 import com.kon.EShop.model.Product;
 import com.kon.EShop.repository.impl.ProductImpl;
@@ -13,8 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static com.kon.EShop.util.EntityUtil.productFromTo;
 import static com.kon.EShop.util.EntityUtil.productInProductTo;
 
 @RestController
@@ -70,15 +74,25 @@ public class ProductController {
     }
 
     @GetMapping("/profile/vote/{id}")
-    public void vote(@PathVariable Long id, @RequestParam Integer vote) {
-        productIml.vote(id, vote);
+    public String vote(@PathVariable Long id, @RequestParam Integer vote, HttpSession session) {
+        Set<Long> idVotes = (Set<Long>) session.getAttribute("voted");
+        if (idVotes == null)
+            idVotes = new HashSet<>();
+        if (!idVotes.contains(id)) {
+            productIml.vote(id, vote);
+            idVotes.add(id);
+            session.setAttribute("voted", idVotes);
+            return "Ok";
+        }
+        return "Что то не так!";
     }
 
 
 
     @PostMapping("/admin")
-    public Product newProduct(@RequestBody Product product) {
-        return productIml.save(product);
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void newProduct(@RequestBody ProductTo product) {
+        productIml.save(productFromTo(product));
     }
 
     @DeleteMapping("/admin/{id}")
@@ -132,9 +146,20 @@ public class ProductController {
         productIml.enable(id, enabled);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/{id}")
     public ProductTo getAdmin(@PathVariable Long id) {
         return productInProductTo(productIml.getOneAdmin(id));
+    }
+
+    @PutMapping("/admin")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void processingProduct(@RequestBody List<CartProduct> list) {
+        for (CartProduct cp : list) {
+            Product product = productIml.findById(cp.getProductId());
+            Integer amount = product.getAmount();
+            product.setAmount(amount - cp.getAmount());
+            productIml.save(product);
+        }
     }
 }
 

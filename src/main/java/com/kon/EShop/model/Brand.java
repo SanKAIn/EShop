@@ -3,16 +3,15 @@ package com.kon.EShop.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kon.EShop.HasId;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@ToString
 @Getter @Setter
 @Entity
 @NoArgsConstructor
@@ -29,13 +28,21 @@ public class Brand implements HasId {
     private String label;
     private Boolean popular;
     @JsonIgnore
-    @OneToMany(mappedBy = "brand", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     private List<Product> product;
 
     public Brand(Long id, @NotNull String name, String label) {
         this.id = id;
         this.name = name;
         this.label = label;
+    }
+
+    public void addProduct(Product product) {
+        this.product.add(product);
+    }
+
+    public void removeProduct(Product product) {
+        this.product.remove(product);
     }
 
     @Override
@@ -45,7 +52,7 @@ public class Brand implements HasId {
 
         Brand brands = (Brand) o;
 
-        if (id != brands.id) return false;
+        if (!id.equals(brands.id)) return false;
         if (!Objects.equals(name, brands.name)) return false;
         return Objects.equals(label, brands.label);
     }
@@ -58,12 +65,4 @@ public class Brand implements HasId {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Brand{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", label='" + label + '\'' +
-                '}';
-    }
 }

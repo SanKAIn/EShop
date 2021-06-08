@@ -40,13 +40,6 @@ public class ProductImpl {
     }
 
     public Page<Product> searchAdmin(Long brandId, Long categoryId, Long manufacturerId, Long mainCatId, String text, Pageable pageable) {
-//        Page<Product> list = null;
-//        if (findBy.equals("vendor"))
-//            list = repository.getProductsByVendorContains(key, pageable);
-//        if (findBy.equals("name"))
-//            list = repository.getProductsByNameContains(key, pageable);
-//        if (findBy.equals("all"))
-//            list = repository.getProductsByNameContainsOrVendorContains(key, key, pageable);
         return repository.searchAll(brandId, categoryId, manufacturerId, mainCatId, text, pageable);
     }
 
@@ -97,11 +90,12 @@ public class ProductImpl {
     }
 
     public Product findById(long id) {
-        return repository.findById(id).orElse(null);
+        return repository.findWithId(id);
     }
 
     public List<Product> listProductsForCart(List<Long> ids) {
-        return repository.findList(ids);
+        List<Product> list = repository.findList(ids);
+        return list;
     }
 
     public Page<Product> findProduct(String findBy, String key, Pageable pageable) {

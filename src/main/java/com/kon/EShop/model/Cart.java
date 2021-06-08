@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Entity @Table(name = "carts")
 public class Cart implements HasId {
     @Id
-    @SequenceGenerator(name= "cart_seq", sequenceName = "cart_product_id_seq", allocationSize = 1, initialValue = 100)
+    @SequenceGenerator(name= "cart_seq", sequenceName = "carts_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="cart_seq")
     private Long id;
 
@@ -48,7 +48,7 @@ public class Cart implements HasId {
 
     public List<Long> getIds() {
         return cartProducts.stream()
-                .map(CartProduct::getProduct_id)
+                .map(CartProduct::getProductId)
                 .collect(Collectors.toList());
     }
 

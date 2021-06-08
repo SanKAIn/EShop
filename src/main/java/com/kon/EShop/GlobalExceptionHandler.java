@@ -32,30 +32,52 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MultipartException.class)
     public ModelAndView handleControllerException(HttpServletRequest request, Throwable ex) {
-        return logAndGetExceptionView(request, (Exception) ex, false, ErrorType.WRONG_REQUEST, "Attachment size exceeds the allowable limit! (10MB)");
+        return logAndGetExceptionView(
+                request,
+                (Exception) ex,
+                false,
+                ErrorType.WRONG_REQUEST,
+                "Attachment size exceeds the allowable limit! (10MB)");
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView wrongRequest(HttpServletRequest req, NoHandlerFoundException e) {
-        return logAndGetExceptionView(req, e, false, ErrorType.WRONG_REQUEST, null);
+        return logAndGetExceptionView(
+                req,
+                e,
+                false,
+                ErrorType.WRONG_REQUEST,
+                null);
     }
 
     @ExceptionHandler(ApplicationException.class)
     public ModelAndView applicationErrorHandler(HttpServletRequest req, ApplicationException appEx) {
-        return logAndGetExceptionView(req, appEx, true, appEx.getType(),
+        return logAndGetExceptionView(
+                req,
+                appEx,
+                true,
+                appEx.getType(),
                 messageSourceAccessor.getMessage(appEx.getMsgCode(), appEx.getArgs()));
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ErrorInfo autority(HttpServletRequest req, HttpRequestMethodNotSupportedException e) {
-        return new ErrorInfo(req.getRequestURL(), ErrorType.APP_ERROR, e.getMessage());
+        return new ErrorInfo(
+                req.getRequestURL(),
+                ErrorType.APP_ERROR,
+                e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ModelAndView defaultErrorHandler(HttpServletRequest req, Exception e) {
         log.error("Exception at request " + req.getRequestURL(), e);
-        return logAndGetExceptionView(req, e, true, ErrorType.APP_ERROR, null);
+        return logAndGetExceptionView(
+                req,
+                e,
+                true,
+                ErrorType.APP_ERROR,
+                null);
     }
 
     private ModelAndView logAndGetExceptionView(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String msg) {

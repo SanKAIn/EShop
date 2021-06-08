@@ -1,6 +1,8 @@
 package com.kon.EShop.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kon.EShop.HasId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Getter @Setter
@@ -16,29 +19,57 @@ import java.util.Objects;
 @Table(name = "orders")
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Order implements HasId {
+public class Orders implements HasId {
     @Id
     @SequenceGenerator(name= "order_seq", sequenceName = "orders_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="order_seq")
     private Long id;
     private String name;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "middle_name")
+    private String middleName;
+
+    @Column(name = "pay_method")
+    private String payMethod;
+
     private String address;
     private String comment;
     private String phone;
+    private String email;
     private String delivery;
+
+    @Column(name = "date", nullable = false, columnDefinition = "timestamp default now()")
+//    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Date date = new Date();
+
     @Enumerated(EnumType.STRING)
     private State state = State.NEW;
+
     @Column(name = "cart_id")
     private Long cartId;
+
     @Column(name = "full_sum")
     private Integer fullSum;
+
+    public Orders(Long id, String name, String lastName, String payMethod, Long cartId, Integer fullSum) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
+        this.payMethod = payMethod;
+        this.cartId = cartId;
+        this.fullSum = fullSum;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Order orders = (Order) o;
+        Orders orders = (Orders) o;
 
         if (!id.equals(orders.id)) return false;
         if (!Objects.equals(address, orders.address)) return false;

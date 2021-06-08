@@ -1,6 +1,6 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Order;
+import com.kon.EShop.model.Orders;
 import com.kon.EShop.model.Product;
 import com.kon.EShop.repository.impl.*;
 import org.springframework.data.domain.Page;
@@ -30,13 +30,18 @@ public class MainController {
     private final CategoryImpl catImpl;
     private final MainCategoryImpl mainCategoryImpl;
     private final ManufactureImpl manufacture;
+    private final OrderImpl orderS;
+    private final ShopImpl shopImpl;
 
-    public MainController(ProductImpl productImpl, BrandImpl brandImpl, CategoryImpl catImpl, MainCategoryImpl mainCategoryImpl, ManufactureImpl manufacture) {
+    public MainController(ProductImpl productImpl, BrandImpl brandImpl, CategoryImpl catImpl,
+                          MainCategoryImpl mainCategoryImpl, ManufactureImpl manufacture, OrderImpl orderS, ShopImpl shopImpl) {
         this.productImpl = productImpl;
         this.brandImpl = brandImpl;
         this.catImpl = catImpl;
         this.mainCategoryImpl = mainCategoryImpl;
         this.manufacture = manufacture;
+        this.orderS = orderS;
+        this.shopImpl = shopImpl;
     }
 
     @GetMapping("/favicon.ico")
@@ -49,6 +54,19 @@ public class MainController {
     public String getRoot(Model model) {
         model.addAttribute("cards", mainCategoryImpl.getAll());
         return "main";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/orders")
+    public String getOrders() {
+        return "orders";
+    }
+
+    @GetMapping("/orderSecc")
+    public String order(HttpSession session, Model model) {
+        Orders order = orderS.get((Long) session.getAttribute("orderId"));
+        model.addAttribute("order", order);
+        return "successOrder";
     }
 
     @GetMapping("/catalog")
@@ -80,17 +98,16 @@ public class MainController {
 
     @GetMapping("/order")
     public String getOrder(Model model) {
-        Order order = new Order();
+        Orders order = new Orders();
         model.addAttribute("order", order);
+        model.addAttribute("shop", shopImpl.getAll());
         return "order";
     }
 
     @GetMapping("/one/{id}")
     public String getOne(@PathVariable Long id, Model model) {
         Product one = productImpl.findById(id);
-        if (one != null) {
-            model.addAttribute("product", productInProductTo(one));
-        }
+        if (one != null) model.addAttribute("product", productInProductTo(one));
         return "single";
     }
 

@@ -48,6 +48,14 @@ public class Category implements HasId {
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Product> products;
 
+    public void addProduct(Product product) {
+        this.products.add(product);
+    }
+
+    public void removeProduct(Product product) {
+        this.products.remove(product);
+    }
+
     public Category(Long id, Long parent, @NotNull String name, @Max(500) String description, String label) {
         this.id = id;
         this.parent = parent;
@@ -78,5 +86,10 @@ public class Category implements HasId {
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (label != null ? label.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "category-"+this.name;
     }
 }

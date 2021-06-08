@@ -4,6 +4,7 @@ import com.kon.EShop.model.Category;
 import com.kon.EShop.repository.impl.CategoryImpl;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class CategoryController {
         return categoryImpl.getAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/{id}")
     public Category get(@PathVariable Long id) throws NotFoundException {
         return categoryImpl.get(id);
     }

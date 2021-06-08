@@ -1,8 +1,10 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Order;
-import com.kon.EShop.repository.impl.OrderImpl;
+import com.kon.EShop.model.Orders;
+import com.kon.EShop.model.State;
+import com.kon.EShop.service.OrderService;
 import com.kon.EShop.util.exception.NotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -12,27 +14,38 @@ import java.util.List;
 @RequestMapping("/order")
 public class OrderController {
 
-    private final OrderImpl orderImpl;
+    private final OrderService service;
 
-    public OrderController(OrderImpl orderImpl) {
-        this.orderImpl = orderImpl;
+    public OrderController(OrderService service) {
+        this.service = service;
     }
 
     @GetMapping("/admin")
-    public List<Order> getAll() {
-        return orderImpl.getAll();
+    public List<Orders> getAll(@RequestParam(defaultValue = "NEW") State state) {
+        return service.getAll(state);
     }
 
-    @PostMapping
-    public Order saveOrder(@RequestBody Order order, HttpSession session) {
-        Long cartId = (Long) session.getAttribute("cartId");
-        order.setCartId(cartId);
-        return orderImpl.save(order);
+    @GetMapping("/admin/{id}")
+    public Orders getOrder(@PathVariable Long id) {
+        return service.getOrder(id);
     }
 
     @DeleteMapping("/admin/{id}")
     public void delete(@PathVariable Long id) throws NotFoundException {
-        orderImpl.delete(id);
+        service.delete(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void saveOrder(@RequestBody Orders order, HttpSession session) {
+        Long cartId = (Long) session.getAttribute("cartId");
+        service.save(order, cartId);
+    }
+
+    @PostMapping("/admin")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void adminUpdate(@RequestBody Orders order) {
+        service.aUpdate(order);
     }
 
 }

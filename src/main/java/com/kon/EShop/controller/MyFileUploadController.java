@@ -4,7 +4,6 @@ import com.kon.EShop.model.MyUploadForm;
 import com.kon.EShop.util.FileManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,7 @@ import java.util.List;
 @Controller
 public class MyFileUploadController {
 
-    private FileManager manager;
+    private final FileManager manager;
 
     @Value("${upload.path}")
     private String path;
@@ -33,16 +32,13 @@ public class MyFileUploadController {
         return "uploadMultiFile";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/file")
+    @DeleteMapping("/admin/file")
     @ResponseStatus(value = HttpStatus.OK)
     public void delete(@RequestParam String path, @RequestParam(name = "file") String fileName) throws IOException {
         manager.delete(fileName, path);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/uploadMultiFile")
-//    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @PostMapping("/admin/uploadMultiFile")
     @ResponseBody
     public List<String> uploadMultiFileHandlerPOST(@RequestParam String path,
                                                    @RequestParam MultipartFile[] file) throws IOException {

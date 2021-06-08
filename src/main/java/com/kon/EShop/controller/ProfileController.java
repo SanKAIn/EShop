@@ -1,7 +1,7 @@
 package com.kon.EShop.controller;
 
 import com.kon.EShop.AuthorizedUser;
-import com.kon.EShop.UserService;
+import com.kon.EShop.service.UserService;
 import com.kon.EShop.to.UserTo;
 import com.kon.EShop.util.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,17 +9,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
 import javax.validation.Valid;
 
 import static com.kon.EShop.util.UserUtil.createNewFromTo;
-import static com.kon.EShop.util.ValidationUtil.assureIdConsistent;
 
 @Controller
-@RequestMapping("/profile")
+@RequestMapping()
 @Slf4j
 public class ProfileController {
 
@@ -29,7 +27,7 @@ public class ProfileController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping("/profile")
     public String profile(ModelMap model, @AuthenticationPrincipal AuthorizedUser authUser) {
         model.addAttribute("register", false);
         model.addAttribute("userTo", authUser.getUserTo());
@@ -37,7 +35,7 @@ public class ProfileController {
         return "profile";
     }
 
-    @PostMapping
+    @PostMapping("/profile")
     public String updateProfile(@Valid UserTo userTo,
                                 BindingResult result,
                                 SessionStatus status,
@@ -77,7 +75,7 @@ public class ProfileController {
         return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
     }
 
-    @DeleteMapping(value = "/{userId}")
+    @DeleteMapping(value = "/profile/{userId}")
     public void deleteUser(@PathVariable("userId") Long userId) throws NotFoundException {
         service.delete(userId);
     }

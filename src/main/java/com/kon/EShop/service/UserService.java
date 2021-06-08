@@ -1,5 +1,6 @@
-package com.kon.EShop;
+package com.kon.EShop.service;
 
+import com.kon.EShop.AuthorizedUser;
 import com.kon.EShop.model.Cart;
 import com.kon.EShop.model.CartProduct;
 import com.kon.EShop.model.User;
@@ -19,13 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
-import static com.kon.EShop.util.EntityUtil.getCartFromSession;
 import static com.kon.EShop.util.EntityUtil.setToSession;
 import static com.kon.EShop.util.UserUtil.prepareToSave;
 import static com.kon.EShop.util.UserUtil.updateFromTo;
@@ -100,7 +97,8 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("User " + email + " is not found");
         }
-        prepareCart(user.getId());
+        setToSession("userId", user.getId());
+        //prepareCart(user.getId());
         return new AuthorizedUser(user);
     }
 

@@ -8,6 +8,7 @@ import com.kon.EShop.repository.impl.CartImpl;
 import com.kon.EShop.to.BigTo;
 import com.kon.EShop.to.CommentTo;
 import com.kon.EShop.to.ProductTo;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -24,6 +27,27 @@ import static com.kon.EShop.util.SecurityUtil.idIfAuthUser;
 
 public class EntityUtil {
     public EntityUtil() {
+    }
+
+    public static Product productFromTo(ProductTo pT) {
+        Product p = new Product();
+        p.setId(pT.getId());
+        p.setName(pT.getName());
+        p.setNameUa(pT.getNameUa());
+        p.setVendor(pT.getVendor());
+        p.setPopular(pT.getPopular());
+        p.setDescription(pT.getDescription());
+        p.setDescriptionUa(pT.getDescriptionUa());
+        p.setAmount(pT.getAmount());
+        p.setPrice(pT.getPrice());
+        p.setPhotos(pT.getPhotos());
+        p.setBrand(pT.getBrand());
+        p.setRating(pT.getRating());
+        p.setCategory(pT.getCategory());
+        p.setMainCategory(pT.getMainCategory());
+        p.setManufacture(pT.getManufacture());
+        p.setUnit(pT.getUnit());
+        return p;
     }
 
     public static List<ProductTo> productInProductTo(List<Product> products) {
@@ -44,14 +68,18 @@ public class EntityUtil {
         to.setDescriptionUa(product.getDescriptionUa());
         to.setAmount(product.getAmount());
         to.setPrice(product.getPrice());
-        to.setPhotos(product.getPhotos());
-        to.setBrand(product.getBrand());
-        to.setRating(product.getRating());
-        to.setCategory(product.getCategory());
-        to.setMainCategory(product.getMainCategory());
-        to.setManufacture(product.getManufacture());
+        PersistenceUtil pu = Persistence.getPersistenceUtil();
+        if (pu.isLoaded(product.getPhotos())) to.setPhotos(product.getPhotos());
+        if (pu.isLoaded(product.getBrand())) to.setBrand(product.getBrand());
+        if (pu.isLoaded(product.getRating())) to.setRating(product.getRating());
+        if (pu.isLoaded(product.getCategory())) to.setCategory(product.getCategory());
+        if (pu.isLoaded(product.getMainCategory())) to.setMainCategory(product.getMainCategory());
+        if (pu.isLoaded(product.getManufacture())) to.setManufacture(product.getManufacture());
+        if (pu.isLoaded(product.getUnit())) to.setUnit(product.getUnit());
         return to;
     }
+
+
 
     public static CommentTo getCommentTo(Comment comment) {
         CommentTo commentTo = new CommentTo();
@@ -74,7 +102,7 @@ public class EntityUtil {
         for (ProductTo p : productTos) {
             p.setCartAmount(cart.getCartProducts()
                     .stream()
-                    .filter(f->f.getProduct_id().equals(p.getId()))
+                    .filter(f->f.getProductId().equals(p.getId()))
                     .findAny()
                     .get()
                     .getAmount());

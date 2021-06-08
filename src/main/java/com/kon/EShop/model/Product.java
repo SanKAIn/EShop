@@ -1,7 +1,6 @@
 package com.kon.EShop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kon.EShop.HasId;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,7 @@ import java.util.Objects;
         @NamedEntityGraph(
                 name = "Product.brand",
                 attributeNodes = {
-                        @NamedAttributeNode(value = "brand"),
+                        @NamedAttributeNode(value = "unit"),
                         @NamedAttributeNode(value = "rating"),
                         @NamedAttributeNode(value = "photos")
                 }
@@ -24,7 +23,7 @@ import java.util.Objects;
 
 @Getter @Setter
 @Entity @Table(name = "products")
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product implements HasId {
     @Id
     @SequenceGenerator(name= "product_seq", sequenceName = "products_id_seq", allocationSize = 1, initialValue = 100)
@@ -55,6 +54,12 @@ public class Product implements HasId {
             fetch = FetchType.LAZY)
     private Rating rating;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit_id")
+    private Unit unit;
+
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
