@@ -14,7 +14,6 @@ import java.util.List;
 
 import static com.kon.EShop.util.ValidationUtil.assureIdConsistent;
 
-//@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/admin/users")
 public class AdminController {

@@ -40,10 +40,8 @@ public class MyFileUploadController {
 
     @PostMapping("/admin/uploadMultiFile")
     @ResponseBody
-    public List<String> uploadMultiFileHandlerPOST(@RequestParam String path,
-                                                   @RequestParam MultipartFile[] file) throws IOException {
+    public List<String> uploadMultiFileHandlerPOST(@RequestParam String path, @RequestParam MultipartFile[] file) throws IOException {
         return manager.doUpload(file, path);
-
     }
 
 }

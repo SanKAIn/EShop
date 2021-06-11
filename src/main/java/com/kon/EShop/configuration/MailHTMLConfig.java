@@ -24,9 +24,6 @@ public class MailHTMLConfig {
     @Value("${spring.mail.port}")
     private int port;
 
-    @Value("${spring.mail.protocol}")
-    private String protocol;
-
     @Value("${mail.debug}")
     private String debug;
 

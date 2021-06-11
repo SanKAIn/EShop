@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.kon.EShop.util.EntityUtil.cartAmountToProductsTo;
 import static com.kon.EShop.util.EntityUtil.productInProductTo;
+import static com.kon.EShop.util.SecurityUtil.idIfAuthUser;
 
 @Service
 public class CartService {
@@ -37,9 +38,8 @@ public class CartService {
 
    public void addForOrder(List<CartProduct> list, HttpSession session) {
       Cart newCart = new Cart();
-      Long userId = (Long) session.getAttribute("userId");
       for (CartProduct cp : list) newCart.addCartProduct(cp);
-      newCart.setUser_id(userId);
+      newCart.setUser_id(idIfAuthUser());
       newCart.setOrdered(true);
       cartImpl.save(newCart);
       session.setAttribute("cartId", newCart.id());

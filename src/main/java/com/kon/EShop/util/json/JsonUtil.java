@@ -1,4 +1,4 @@
-package com.kon.EShop.util;
+package com.kon.EShop.util.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
