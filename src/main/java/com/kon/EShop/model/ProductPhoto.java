@@ -37,9 +37,7 @@ public class ProductPhoto implements HasId {
         ProductPhoto that = (ProductPhoto) o;
 
         if (id != that.id) return false;
-        if (!Objects.equals(url, that.url)) return false;
-
-        return true;
+        return Objects.equals(url, that.url);
     }
 
     @Override

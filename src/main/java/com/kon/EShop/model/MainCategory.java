@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -25,8 +23,8 @@ public class MainCategory {
     private String label;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "mainCategory", fetch = FetchType.LAZY)
-    private List<Product> products = new ArrayList<>();
+    @ManyToMany(mappedBy = "mainCategory")
+    private Set<Product> products = new HashSet<>();
 
     public void addProduct(Product product) {
         this.products.add(product);

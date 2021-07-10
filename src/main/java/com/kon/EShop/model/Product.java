@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kon.EShop.HasId;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @NamedEntityGraphs({
         @NamedEntityGraph(
@@ -23,7 +22,6 @@ import java.util.Objects;
 
 @Getter @Setter
 @Entity @Table(name = "products")
-//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product implements HasId {
     @Id
     @SequenceGenerator(name= "product_seq", sequenceName = "products_id_seq", allocationSize = 1, initialValue = 100)
@@ -36,6 +34,7 @@ public class Product implements HasId {
     private String vendor;
     @Column(name = "popular", nullable = false, columnDefinition = "bool default true")
     private Boolean popular;
+    private String search;
     private String description;
     @Column(name = "description_ua")
     private String descriptionUa;
@@ -46,7 +45,7 @@ public class Product implements HasId {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private List<ProductPhoto> photos = new ArrayList<>();
+    private Set<ProductPhoto> photos = new HashSet<>();
 
     @OneToOne(mappedBy = "product",
             cascade = CascadeType.ALL,
@@ -60,19 +59,37 @@ public class Product implements HasId {
     private Unit unit;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE
+    })
+    @JoinTable(name = "prod_brands",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "brand_id")
+    )
+    private Set<Brand> brand = new HashSet<>();
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE
+    })
+    @JoinTable(name = "prod_filters",
+        joinColumns = @JoinColumn(name = "product_id"),
+        inverseJoinColumns = @JoinColumn(name = "filter_id")
+    )
+    private Set<Category> category = new HashSet<>();
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_cat_id")
-    private MainCategory mainCategory;
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "prod_main",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "main_id")
+    )
+    private Set<MainCategory> mainCategory = new HashSet<>();
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -106,8 +123,8 @@ public class Product implements HasId {
     }
 
     public Product(Long id, String name, String vendor, Boolean popular, String description,
-                   Integer amount, Integer price, List<ProductPhoto> photos, Brand brand,
-                   Rating rating, Category category) {
+                   Integer amount, Integer price, Set<ProductPhoto> photos, Set<Brand> brand,
+                   Rating rating, Set<Category> category) {
         this.id = id;
         this.name = name;
         this.vendor = vendor;

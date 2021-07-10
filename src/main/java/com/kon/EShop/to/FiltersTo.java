@@ -3,43 +3,33 @@ package com.kon.EShop.to;
 import com.kon.EShop.model.FiltersCount;
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Data
 public class FiltersTo {
-    private Map<Long, Long> brands = new HashMap<>();
-    private Map<Long, Long> categories = new HashMap<>();
-    private Map<Long, Long> manufactures = new HashMap<>();
-    private Long summa = 0L;
+    private Map<Long, Integer> brands = new HashMap<>();
+    private Map<Long, Integer> categories = new HashMap<>();
+    private Map<Long, Integer> manufactures = new HashMap<>();
+    private Integer summa;
 
     public FiltersTo(List<FiltersCount> filters) {
-        for (FiltersCount fc: filters) {
-            this.brands.merge(fc.getBrand_id(), fc.getCount(), (a, b) -> a+=b);
-            this.categories.merge(fc.getCategory_id(), fc.getCount(), (a, b) -> a+=b);
-            this.manufactures.merge(fc.getManufacture_id(), fc.getCount(), (a, b) -> a+=b);
-            this.summa+=fc.getCount();
+        Set<Long> su = new HashSet<>();
+        filters.forEach(f -> su.add(f.getProduct_id()));
+        this.summa = su.size();
+        for (Long pr: su) {
+            Set<Long> br = new HashSet<>();
+            Set<Long> ca = new HashSet<>();
+            Set<Long> ma = new HashSet<>();
+            for (FiltersCount fc: filters) {
+                if (fc.getProduct_id().equals(pr)) {
+                    br.add(fc.getBrand_id());
+                    ca.add(fc.getCategory_id());
+                    ma.add(fc.getManufacture_id());
+                }
+            }
+            br.forEach(f -> this.brands.merge(f, 1, (a, b) -> a+=b));
+            ca.forEach(f -> this.categories.merge(f, 1, (a, b) -> a+=b));
+            ma.forEach(f -> this.manufactures.merge(f, 1, (a, b) -> a+=b));
         }
-    }
-
-    public void setSumma(List<FiltersCount> f) {
-        this.summa = f.stream().mapToLong(FiltersCount::getCount).sum();
-    }
-
-    public void setBrands(List<FiltersCount> f){
-        this.brands = f.stream()
-                .collect(Collectors.groupingBy(FiltersCount::getBrand_id, Collectors.summingLong(FiltersCount::getCount)));
-    }
-
-    public void setCategories(List<FiltersCount> f) {
-        this.categories = f.stream()
-                .collect(Collectors.groupingBy(FiltersCount::getCategory_id, Collectors.summingLong(FiltersCount::getCount)));
-    }
-
-    public void setManufactures(List<FiltersCount> f) {
-        this.manufactures = f.stream()
-                .collect(Collectors.groupingBy(FiltersCount::getManufacture_id, Collectors.summingLong(FiltersCount::getCount)));
     }
 }

@@ -1,10 +1,9 @@
 package com.kon.EShop.model;
 
-import java.io.File;
 import java.util.List;
 
 public class MyFile {
-    private String tableName;
+    private String tableName = "products";
     private List<String> columnNames;
 
     public MyFile() {

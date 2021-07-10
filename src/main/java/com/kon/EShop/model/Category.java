@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter @Setter
 @Entity
@@ -45,8 +46,8 @@ public class Category implements HasId {
     private Integer level;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    private List<Product> products;
+    @ManyToMany(mappedBy = "category")
+    private Set<Product> products;
 
     public void addProduct(Product product) {
         this.products.add(product);

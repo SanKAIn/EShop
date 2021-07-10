@@ -13,16 +13,16 @@ public class FiltersCount {
     private Long brand_id;
     private Long category_id;
     private Long manufacture_id;
-    private Long count;
+    private Long product_id;
 
     public FiltersCount() {
     }
 
-    public FiltersCount(Long brand_id, Long category_id, Long manufacture_id, Long count) {
+    public FiltersCount(Long brand_id, Long category_id, Long manufacture_id, Long product_id) {
         this.brand_id = brand_id;
         this.category_id = category_id;
         this.manufacture_id = manufacture_id;
-        this.count = count;
+        this.product_id = product_id;
     }
 
 }

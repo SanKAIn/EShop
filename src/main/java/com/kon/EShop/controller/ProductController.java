@@ -1,7 +1,6 @@
 package com.kon.EShop.controller;
 
 import com.kon.EShop.model.CartProduct;
-import com.kon.EShop.model.MyUploadForm;
 import com.kon.EShop.model.Product;
 import com.kon.EShop.repository.impl.ProductImpl;
 import com.kon.EShop.to.FiltersTo;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -35,11 +35,6 @@ public class ProductController {
     public Page<Product> allU(Pageable page, HttpSession session) {
         Long mainC = (Long) session.getAttribute("mainCategory");
         return productIml.allU(page, mainC);
-    }
-
-    @GetMapping("/five")
-    public List<ProductTo> five() {
-        return productIml.findFive();
     }
 
     @GetMapping("/user/{id}")
@@ -102,8 +97,8 @@ public class ProductController {
 
     @GetMapping("/admin/all")
     public Page<Product> geToAdmin(Pageable pageable,
-                                   @RequestParam(required = false) Long category,
-                                   @RequestParam(required = false) Long brand,
+                                   @RequestParam(required = false) String[] category,
+                                   @RequestParam(required = false) String[] brand,
                                    @RequestParam(required = false) Long manufacture,
                                    @RequestParam(required = false) Long mainCategory) {
         return productIml.findForAdmin(pageable, brand, category, mainCategory, manufacture);
@@ -111,10 +106,9 @@ public class ProductController {
 
     @GetMapping("/admin/find")
     public Page<Product> findA(Pageable pageable,
-                               @RequestParam(defaultValue = "all") String findBy,
                                @RequestParam(defaultValue = "") String key,
-                               @RequestParam(required = false) Long category,
-                               @RequestParam(required = false) Long brand,
+                               @RequestParam(required = false) String[] category,
+                               @RequestParam(required = false) String[] brand,
                                @RequestParam(required = false) Long manufacture,
                                @RequestParam(required = false) Long mainCategory) {
         return productIml.searchAdmin(brand, category, manufacture, mainCategory, key, pageable);
@@ -125,10 +119,10 @@ public class ProductController {
         return productIml.getAllInvisible(pageable);
     }
 
-    @PostMapping("/admin/loadProductsCSV")
-    public void postCSV(@ModelAttribute("myUploadForm") MyUploadForm myUploadForm) {
+    @PostMapping("/admin/loadCSV")
+    public void postCSV(@RequestParam MultipartFile file) {
         try {
-            productIml.updateByCSV(myUploadForm);
+            productIml.updateByCSV(file);
         } catch (IOException e) {
             System.out.println("не получилось CSV");
             e.printStackTrace();
@@ -140,7 +134,7 @@ public class ProductController {
         return productIml.getPassingGoods(id);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/admin/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void enable(@PathVariable int id, @RequestParam boolean enabled) throws NotFoundException {
         productIml.enable(id, enabled);
@@ -153,7 +147,7 @@ public class ProductController {
 
     @PutMapping("/admin")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void processingProduct(@RequestBody List<CartProduct> list) {
+    public void sellProduct(@RequestBody List<CartProduct> list) {
         for (CartProduct cp : list) {
             Product product = productIml.findById(cp.getProductId());
             Integer amount = product.getAmount();

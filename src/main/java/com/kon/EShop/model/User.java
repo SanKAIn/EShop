@@ -120,9 +120,7 @@ public class User implements HasIdAndEmail {
         if (!Objects.equals(email, user.email)) return false;
         if (!Objects.equals(password, user.password)) return false;
         if (!Objects.equals(enabled, user.enabled)) return false;
-        if (!Objects.equals(registered, user.registered)) return false;
-
-        return true;
+        return Objects.equals(registered, user.registered);
     }
 
     @Override

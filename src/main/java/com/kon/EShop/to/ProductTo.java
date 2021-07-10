@@ -8,9 +8,11 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Data
-//@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductTo implements Serializable {
     private Long id;
@@ -24,15 +26,15 @@ public class ProductTo implements Serializable {
     private Integer cartAmount;
     private Integer price;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private List<ProductPhoto> photos = new ArrayList<>();
+    private Set<ProductPhoto> photos = new HashSet<>();
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Brand brand;
+    private Set<Brand> brand;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Rating rating;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Category category;
+    private Set<Category> category;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private MainCategory mainCategory;
+    private Set<MainCategory> mainCategory;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Manufacture manufacture;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -43,7 +45,7 @@ public class ProductTo implements Serializable {
 
     public ProductTo(Long id, String name, String nameUa, String vendor, Boolean popular,
                      String description, String descriptionUa, Integer amount, Integer price,
-                     List<ProductPhoto> photos, Brand brand, Rating rating) {
+                     Set<ProductPhoto> photos, Set<Brand> brand, Rating rating) {
         this.id = id;
         this.name = name;
         this.nameUa = nameUa;
@@ -58,16 +60,16 @@ public class ProductTo implements Serializable {
         this.rating = rating;
     }
 
-    public void setPhotos(List<ProductPhoto> photos) {
+    public void setPhotos(Set<ProductPhoto> photos) {
         this.photos = photos;
         delLoop();
     }
 
-    public Brand getBrand() {
+    public Set<Brand> getBrand() {
         return brand;
     }
 
-    public void setBrand(Brand brand) {
+    public void setBrand(Set<Brand> brand) {
         this.brand = brand;
         delLoop();
     }
@@ -83,7 +85,7 @@ public class ProductTo implements Serializable {
 
     private void delLoop(){
         if (this.brand != null)
-            this.brand.setProduct(null);
+//            this.brand.setProduct(null);
         if (this.rating != null)
             //this.rating.setProduct(null);
         if (this.photos.size() > 0)

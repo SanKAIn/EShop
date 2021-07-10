@@ -3,13 +3,16 @@ package com.kon.EShop.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kon.EShop.HasId;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @ToString
 @Getter @Setter
@@ -28,8 +31,8 @@ public class Brand implements HasId {
     private String label;
     private Boolean popular;
     @JsonIgnore
-    @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
-    private List<Product> product;
+    @ManyToMany(mappedBy = "brand")
+    private Set<Product> product;
 
     public Brand(Long id, @NotNull String name, String label) {
         this.id = id;

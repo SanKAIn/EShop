@@ -55,9 +55,7 @@ public class Rating implements HasId {
 
         if (id != rating1.id) return false;
         if (!Objects.equals(votes, rating1.votes)) return false;
-        if (!Objects.equals(rating, rating1.rating)) return false;
-
-        return true;
+        return Objects.equals(rating, rating1.rating);
     }
 
     @Override
