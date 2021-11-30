@@ -5,6 +5,7 @@ import com.kon.EShop.repository.impl.ShopImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -34,7 +35,7 @@ public class ShopController {
 
     @PostMapping("/admin")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void save(@RequestBody Shop shop) {
+    public void save(@RequestBody @Valid Shop shop) {
         if (shop.isNew())
             shopImpl.save(shop);
         else

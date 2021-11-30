@@ -1,5 +1,7 @@
 package com.kon.EShop.util;
 
+import com.kon.EShop.HasId;
+import com.kon.EShop.NameUa;
 import com.kon.EShop.model.Cart;
 import com.kon.EShop.model.Comment;
 import com.kon.EShop.model.Product;
@@ -21,12 +23,17 @@ import javax.persistence.PersistenceUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static com.kon.EShop.util.SecurityUtil.idIfAuthUser;
 
 public class EntityUtil {
     public EntityUtil() {
+    }
+
+    public static void checkNameUA(NameUa entity) {
+        if (entity.getNameUa() == null) entity.setNameUa(entity.getName());
     }
 
     public static Product productFromTo(ProductTo pT) {
@@ -38,6 +45,7 @@ public class EntityUtil {
         p.setPopular(pT.getPopular());
         p.setDescription(pT.getDescription());
         p.setDescriptionUa(pT.getDescriptionUa());
+        p.setSearch(pT.getSearch().toLowerCase());
         p.setAmount(pT.getAmount());
         p.setPrice(pT.getPrice());
         p.setPhotos(pT.getPhotos());
@@ -66,6 +74,7 @@ public class EntityUtil {
         to.setPopular(product.getPopular());
         to.setDescription(product.getDescription());
         to.setDescriptionUa(product.getDescriptionUa());
+        to.setSearch(product.getSearch());
         to.setAmount(product.getAmount());
         to.setPrice(product.getPrice());
         PersistenceUtil pu = Persistence.getPersistenceUtil();
@@ -166,5 +175,14 @@ public class EntityUtil {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession(true);
         session.setAttribute(name, object);
+    }
+
+    public static boolean isLong(String text) {
+        try {
+            Long.parseLong(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

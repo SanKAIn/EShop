@@ -45,7 +45,7 @@ public class ExceptionInfoHandler {
 
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorInfo> applicationError(HttpServletRequest req, ApplicationException appEx) {
-        ErrorInfo errorInfo = logAndGetErrorInfo(req, appEx, false, appEx.getType(),
+        ErrorInfo errorInfo = logAndGetErrorInfo(req, appEx, true, appEx.getType(),
                 messageSourceAccessor.getMessage(appEx.getMsgCode(), appEx.getArgs()));
         return ResponseEntity.status(appEx.getType().getStatus()).body(errorInfo);
     }
@@ -58,7 +58,7 @@ public class ExceptionInfoHandler {
             String lowerCaseMsg = rootMsg.toLowerCase();
             for (Map.Entry<String, String> entry : CONSTRAINS_I18N_MAP.entrySet()) {
                 if (lowerCaseMsg.contains(entry.getKey())) {
-                    return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR, messageSourceAccessor.getMessage(entry.getValue()));
+                    return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, messageSourceAccessor.getMessage(entry.getValue()));
                 }
             }
         }
@@ -75,14 +75,13 @@ public class ExceptionInfoHandler {
                 .map(messageSourceAccessor::getMessage)
                 .toArray(String[]::new);
 
-        ErrorInfo errorInfo = logAndGetErrorInfo(req, e, false, VALIDATION_ERROR, details);
-        return errorInfo;
+        return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, details);
     }
 
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
-        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR, e.getMessage().split(";"));
+        return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR, e.getMessage().split(";"));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

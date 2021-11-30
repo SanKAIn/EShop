@@ -10,6 +10,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Objects;
 
@@ -24,8 +26,10 @@ public class Orders implements HasId {
     @SequenceGenerator(name= "order_seq", sequenceName = "orders_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="order_seq")
     private Long id;
+    @NotNull(message = "Имя необходимо для оформления заказа")
     private String name;
 
+    @NotNull(message = "Фамилия необходима для оформления заказа")
     @Column(name = "last_name")
     private String lastName;
 
@@ -35,9 +39,13 @@ public class Orders implements HasId {
     @Column(name = "pay_method")
     private String payMethod;
 
+    @NotNull(message = "Адрес доставки обязательно")
     private String address;
     private String comment;
+    @NotNull(message = "Номер телефона нужен для свяи")
     private String phone;
+    @NotNull(message = "Поле не должно быть пустым")
+    @Email(message = "Не правильный формат email")
     private String email;
     private String delivery;
 

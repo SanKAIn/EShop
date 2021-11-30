@@ -2,11 +2,13 @@ package com.kon.EShop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kon.EShop.HasId;
+import com.kon.EShop.NameUa;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @NamedEntityGraphs({
@@ -22,12 +24,12 @@ import java.util.*;
 
 @Getter @Setter
 @Entity @Table(name = "products")
-public class Product implements HasId {
+public class Product implements HasId, NameUa {
     @Id
     @SequenceGenerator(name= "product_seq", sequenceName = "products_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="product_seq")
     private Long id;
-
+    @NotNull(message = "Как товар без названия?")
     private String name;
     @Column(name = "name_ua")
     private String nameUa;
@@ -60,7 +62,7 @@ public class Product implements HasId {
 
     @JsonIgnore
     @ManyToMany(cascade = {
-        CascadeType.PERSIST,
+//        CascadeType.PERSIST,
         CascadeType.MERGE
     })
     @JoinTable(name = "prod_brands",
@@ -71,7 +73,7 @@ public class Product implements HasId {
 
     @JsonIgnore
     @ManyToMany(cascade = {
-        CascadeType.PERSIST,
+//        CascadeType.PERSIST,
         CascadeType.MERGE
     })
     @JoinTable(name = "prod_filters",
@@ -82,7 +84,7 @@ public class Product implements HasId {
 
     @JsonIgnore
     @ManyToMany(cascade = {
-            CascadeType.PERSIST,
+//            CascadeType.PERSIST,
             CascadeType.MERGE
     })
     @JoinTable(name = "prod_main",
@@ -143,12 +145,17 @@ public class Product implements HasId {
         rating.setProduct(this);
     }
 
-    public void addPhoto(ProductPhoto photo) {
+    public void setPhotos(Set<ProductPhoto> photos) {
+        this.photos.clear();
+        if (photos != null) this.photos.addAll(photos);
+    }
+
+    public void addPhotos(ProductPhoto photo) {
         photos.add(photo);
         photo.setProduct(this);
     }
 
-    public void removePhoto(ProductPhoto photo) {
+    public void removePhotos(ProductPhoto photo) {
         photos.remove(photo);
         photo.setProduct(null);
     }

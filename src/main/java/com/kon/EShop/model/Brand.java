@@ -2,6 +2,7 @@ package com.kon.EShop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kon.EShop.DelLabel;
 import com.kon.EShop.HasId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,13 +21,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "brands")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Brand implements HasId {
+public class Brand implements HasId, DelLabel {
     @Id
     @SequenceGenerator(name= "brand_seq", sequenceName = "brands_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="brand_seq")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "У бренда должно быть название")
     private String name;
     private String label;
     private Boolean popular;

@@ -5,6 +5,7 @@ import com.kon.EShop.repository.impl.UnitImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class UnitController {
 
     @PostMapping("/admin")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void save(@RequestBody Unit unit) {
+    public void save(@RequestBody @Valid Unit unit) {
         if (unit.isNew())
             unitImpl.save(unit);
         else

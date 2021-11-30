@@ -15,7 +15,7 @@ public interface ManufactureRepository extends JpaRepository<Manufacture, Long> 
     @Query("DELETE FROM Manufacture o WHERE o.id=:id")
     int delete(@Param("id") Long id);
 
-    @Query("SELECT m FROM Manufacture m LEFT JOIN FETCH m.country")
+    @Query("SELECT m FROM Manufacture m LEFT JOIN FETCH m.country order by m.name")
     List<Manufacture> getAll();
 
     @Query("SELECT m FROM Manufacture m LEFT JOIN FETCH m.country WHERE m.id = :id")

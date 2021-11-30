@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.kon.EShop.util.EntityUtil.checkNameUA;
+
 @Repository
 public class CountryImpl {
     private final CountryRepository repository;
@@ -20,6 +22,8 @@ public class CountryImpl {
     }
 
     public Country save(Country country) {
+        if (country.getNameUa() == null) country.setNameUa(country.getName());
+        checkNameUA(country);
         return repository.save(country);
     }
 

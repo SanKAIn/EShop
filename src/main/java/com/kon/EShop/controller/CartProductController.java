@@ -5,8 +5,6 @@ import com.kon.EShop.model.CartProduct;
 import com.kon.EShop.repository.impl.CartProductImpl;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 import static com.kon.EShop.util.EntityUtil.getCartFromSession;
 
 @RestController

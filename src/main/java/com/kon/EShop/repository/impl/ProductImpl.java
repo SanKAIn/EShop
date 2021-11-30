@@ -1,8 +1,6 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.MyFile;
-import com.kon.EShop.model.Product;
-import com.kon.EShop.model.Rating;
+import com.kon.EShop.model.*;
 import com.kon.EShop.repository.FiltersRepository;
 import com.kon.EShop.repository.ProductRepository;
 import com.kon.EShop.to.FiltersTo;
@@ -17,9 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.kon.EShop.util.EntityUtil.productInProductTo;
+import static com.kon.EShop.util.EntityUtil.*;
 import static com.kon.EShop.util.ValidationUtil.checkNotFoundWithId;
 
 @Repository
@@ -40,7 +40,12 @@ public class ProductImpl {
     }
 
     public Page<Product> searchAdmin(String[] brands, String[] categories, Long manufacturerId, Long mainCatId, String text, Pageable pageable) {
-        return repository.searchAll(toLong(brands), toLong(categories), manufacturerId, mainCatId, text, pageable);
+        if (isLong(text)){
+            return repository.searchAllId(toLong(brands), toLong(categories), manufacturerId, mainCatId, text.toLowerCase(), pageable, Long.parseLong(text));
+        }
+        else {
+            return repository.searchAll(toLong(brands), toLong(categories), manufacturerId, mainCatId, text.toLowerCase(), pageable);
+        }
     }
 
     public Page<Product> getAllInvisible(Pageable pageable) {
@@ -48,12 +53,25 @@ public class ProductImpl {
     }
 
     public Product save(Product product) {
-        product.getPhotos().forEach(f -> f.setProduct(product));
+        Set<ProductPhoto> photos = product.getPhotos();
+        if (photos != null) photos.forEach(f -> f.setProduct(product));
+        checkNameUA(product);
         return repository.save(product);
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        Product product = repository.getOneAdmin(id);
+        if (product != null) {
+            product.getPhotos().forEach(f -> {
+                if (!f.getUrl().equals("temp.jpg")){
+                try {
+                    fileManager.delete(f.getUrl(), "big");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }});
+            repository.delete(product);
+        }
     }
 
     public void updateByCSV(MultipartFile csv) throws IOException {
@@ -96,7 +114,8 @@ public class ProductImpl {
     }
 
     public FiltersTo getCount(String[] brands, String[] categories, String[] manufacture, Long mainId) {
-        return new FiltersTo(filters.countByAl(toLong(categories), toLong(brands), toLong(manufacture), mainId));
+        List<FiltersCount> filtersCounts = filters.countByAl(toLong(categories), toLong(brands), toLong(manufacture), mainId);
+        return new FiltersTo(filtersCounts);
     }
 
     public void vote(Long id, Integer vote) {

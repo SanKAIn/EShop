@@ -3,30 +3,29 @@ package com.kon.EShop.to;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kon.EShop.model.*;
-import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductTo implements Serializable {
     private Long id;
+    @NotNull(message = "А название")
     private String name;
     private String nameUa;
     private String vendor;
     private Boolean popular;
     private String description;
     private String descriptionUa;
+    private String search;
     private Integer amount;
     private Integer cartAmount;
     private Integer price;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Set<ProductPhoto> photos = new HashSet<>();
+    private Set<ProductPhoto> photos;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Brand> brand;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -41,23 +40,6 @@ public class ProductTo implements Serializable {
     private Unit unit;
 
     public ProductTo() {
-    }
-
-    public ProductTo(Long id, String name, String nameUa, String vendor, Boolean popular,
-                     String description, String descriptionUa, Integer amount, Integer price,
-                     Set<ProductPhoto> photos, Set<Brand> brand, Rating rating) {
-        this.id = id;
-        this.name = name;
-        this.nameUa = nameUa;
-        this.vendor = vendor;
-        this.popular = popular;
-        this.description = description;
-        this.descriptionUa = descriptionUa;
-        this.amount = amount;
-        this.price = price;
-        this.photos = photos;
-        this.brand = brand;
-        this.rating = rating;
     }
 
     public void setPhotos(Set<ProductPhoto> photos) {

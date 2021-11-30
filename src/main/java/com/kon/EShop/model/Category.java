@@ -2,7 +2,9 @@ package com.kon.EShop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kon.EShop.DelLabel;
 import com.kon.EShop.HasId;
+import com.kon.EShop.NameUa;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,22 +22,21 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "categories")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Category implements HasId {
+public class Category implements HasId, DelLabel, Comparable<Category>, NameUa {
     @Id
     @SequenceGenerator(name= "category_seq", sequenceName = "categories_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="category_seq")
     private Long id;
 
     private Long parent;
-    @NotNull
+    @NotNull(message = "Поле название не должно быть пустым")
     private String name;
-    @NotNull
     @Column(name = "name_ua")
     private String nameUa;
 
-    @Size(max = 500)
+    @Size(max = 500, message = "Слижком длинное описани (до 500 символов!)")
     private String description;
-    @Size(max = 500)
+    @Size(max = 500, message = "Слижком длинное описани (до 500 символов!)")
     @Column(name = "description_ua")
     private String descriptionUa;
 
@@ -92,5 +93,10 @@ public class Category implements HasId {
     @Override
     public String toString() {
         return "category-"+this.name;
+    }
+
+    @Override
+    public int compareTo(@org.jetbrains.annotations.NotNull Category o) {
+        return getName().compareTo(o.getName());
     }
 }

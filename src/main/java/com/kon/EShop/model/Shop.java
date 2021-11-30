@@ -19,13 +19,14 @@ public class Shop implements HasId {
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="shop_seq")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "У магазина должно быть название")
     private String name;
-    @NotNull
+    @NotNull(message = "Как же магазин без адреса")
     private String address;
     @Column(name = "tel")
+    @NotNull(message = "Как же магазин без телефона а куда звонить")
     private String phone;
-    @NotNull
+    @NotNull(message = "Без графика никак!")
     private String schedule;
 
     @Override

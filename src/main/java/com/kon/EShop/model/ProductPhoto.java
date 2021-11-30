@@ -3,10 +3,7 @@ package com.kon.EShop.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kon.EShop.HasId;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -15,6 +12,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "product_photos")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductPhoto implements HasId {
@@ -42,7 +40,7 @@ public class ProductPhoto implements HasId {
 
     @Override
     public int hashCode() {
-        int result = id.intValue();
+        int result = this.id != null ? this.id.intValue() : 0;
         result = 31 * result + (url != null ? url.hashCode() : 0);
         return result;
     }

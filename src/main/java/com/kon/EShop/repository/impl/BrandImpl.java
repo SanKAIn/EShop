@@ -1,13 +1,14 @@
 package com.kon.EShop.repository.impl;
 
 import com.kon.EShop.model.Brand;
-import com.kon.EShop.model.User;
 import com.kon.EShop.repository.BrandRepository;
+import com.kon.EShop.util.FileManager;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.kon.EShop.util.ValidationUtil.checkNew;
@@ -17,9 +18,11 @@ import static com.kon.EShop.util.ValidationUtil.checkNotFoundWithId;
 public class BrandImpl {
 
     private final BrandRepository repository;
+    private final FileManager fileManager;
 
-    public BrandImpl(BrandRepository repository) {
+    public BrandImpl(BrandRepository repository, FileManager fileManager) {
         this.repository = repository;
+        this.fileManager = fileManager;
     }
 
     public List<Brand> getAll() {
@@ -41,7 +44,9 @@ public class BrandImpl {
         return checkNotFoundWithId(repository.save(brand), brand.getId());
     }
 
-    public Integer delete(Long id) {
+    public Integer delete(Long id) throws IOException {
+        Brand brand = repository.findById(id).orElse(null);
+        fileManager.delLabel(brand);
         return repository.deleteBrandById(id);
     }
 

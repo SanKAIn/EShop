@@ -24,9 +24,18 @@ public class UserUtil {
         return user;
     }
 
+    public static User updateFromUser(User user, User updated) {
+        user.setName(updated.getName());
+        user.setEmail(updated.getEmail().toLowerCase());
+        user.setPhone(updated.getPhone());
+        if (updated.getPassword() != null) user.setPassword(updated.getPassword());
+        user.setRoles(updated.getRoles());
+        return user;
+    }
+
     public static User prepareToSave(User user, PasswordEncoder passwordEncoder) {
         String password = user.getPassword();
-        user.setPassword(password.length() <= 20 ? passwordEncoder.encode(password) : password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setEmail(user.getEmail().toLowerCase());
         return user;
     }

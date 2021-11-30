@@ -63,7 +63,10 @@ public class ValidationUtil {
     }
 
     public static String getMessage(Throwable e) {
-        return e.getLocalizedMessage() != null ? e.getLocalizedMessage() : e.getClass().getName();
+
+        String s = e.getLocalizedMessage() != null ? e.getLocalizedMessage() : e.getClass().getName();
+
+        return s;
     }
 
     public static Throwable logAndGetRootCause(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {

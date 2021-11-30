@@ -62,11 +62,11 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ErrorInfo autority(HttpServletRequest req, HttpRequestMethodNotSupportedException e) {
+    public ErrorInfo authority(HttpServletRequest req, HttpRequestMethodNotSupportedException e) {
         return new ErrorInfo(
                 req.getRequestURL(),
                 ErrorType.APP_ERROR,
-                e.getMessage());
+                e.getMessage(), e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

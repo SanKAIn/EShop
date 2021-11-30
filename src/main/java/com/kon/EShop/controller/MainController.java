@@ -2,6 +2,7 @@ package com.kon.EShop.controller;
 
 import com.kon.EShop.model.Orders;
 import com.kon.EShop.model.Product;
+import com.kon.EShop.model.Role;
 import com.kon.EShop.repository.impl.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -53,10 +54,10 @@ public class MainController {
     @GetMapping("/")
     public String getRoot(Model model) {
         model.addAttribute("cards", mainCategoryImpl.getAll());
-        return "main";
+        return "index";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/orders")
     public String getOrders() {
         return "orders";
@@ -118,7 +119,8 @@ public class MainController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
-    public String getUsers() {
+    public String getUsers(Model model) {
+        model.addAttribute("roles", Role.values());
         return "users";
     }
 

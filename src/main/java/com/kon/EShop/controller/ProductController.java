@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -82,11 +83,9 @@ public class ProductController {
         return "Что то не так!";
     }
 
-
-
     @PostMapping("/admin")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void newProduct(@RequestBody ProductTo product) {
+    public void newProduct(@RequestBody @Valid ProductTo product) {
         productIml.save(productFromTo(product));
     }
 
@@ -140,12 +139,17 @@ public class ProductController {
         productIml.enable(id, enabled);
     }
 
-    @GetMapping("/admin/{id}")
+    @GetMapping("/manager/{id}")
     public ProductTo getAdmin(@PathVariable Long id) {
         return productInProductTo(productIml.getOneAdmin(id));
     }
 
-    @PutMapping("/admin")
+    @GetMapping("/admin/{id}")
+    public ProductTo getToAdmin(@PathVariable Long id) {
+        return productInProductTo(productIml.getOneAdmin(id));
+    }
+
+    @PutMapping("/manager")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void sellProduct(@RequestBody List<CartProduct> list) {
         for (CartProduct cp : list) {

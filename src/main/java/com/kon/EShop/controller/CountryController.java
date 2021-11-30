@@ -4,6 +4,7 @@ import com.kon.EShop.model.Country;
 import com.kon.EShop.repository.impl.CountryImpl;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class CountryController {
     }
 
     @PostMapping("/admin")
-    public Country save(@RequestBody Country country) {
+    public Country save(@RequestBody @Valid Country country) {
         return repository.save(country);
     }
 }

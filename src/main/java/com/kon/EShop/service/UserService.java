@@ -24,8 +24,7 @@ import org.springframework.util.Assert;
 import java.util.List;
 
 import static com.kon.EShop.util.EntityUtil.setToSession;
-import static com.kon.EShop.util.UserUtil.prepareToSave;
-import static com.kon.EShop.util.UserUtil.updateFromTo;
+import static com.kon.EShop.util.UserUtil.*;
 import static com.kon.EShop.util.ValidationUtil.*;
 
 @Service
@@ -80,7 +79,20 @@ public class UserService implements UserDetailsService {
         log.info("update {} with id={}", userTo, id);
         assureIdConsistent(userTo, id);
         User user = get(userTo.getId());
-        prepareAndSave(updateFromTo(user, userTo));   // !! need only for JDBC implementation
+        prepareAndSave(updateFromTo(user, userTo));
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Transactional
+    public void update(User user, long id) throws NotFoundException {
+        log.info("update {} with id={}", user, id);
+        assureIdConsistent(user, id);
+        User userC = get(user.getId());
+        updateFromUser(userC, user);
+        if (user.getPassword() != null)
+            prepareAndSave(userC);
+        else
+            repository.save(userC);
     }
 
     @CacheEvict(value = "users", allEntries = true)
@@ -88,7 +100,7 @@ public class UserService implements UserDetailsService {
     public void enable(long id, boolean enabled) throws NotFoundException {
         User user = checkNotFoundWithId(get(id), id);
         user.setEnabled(enabled);
-        repository.save(user);  // !! need only for JDBC implementation
+        repository.save(user);
     }
 
     @Override
@@ -98,7 +110,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User " + email + " is not found");
         }
         setToSession("userId", user.getId());
-        //prepareCart(user.getId());
         return new AuthorizedUser(user);
     }
 

@@ -5,10 +5,10 @@ import com.kon.EShop.repository.impl.BrandImpl;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -37,15 +37,17 @@ public class BrandController {
     @PostMapping("/admin")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void save(@RequestBody @Valid Brand brand) throws NotFoundException {
-        if (brand.isNew())
+        if (brand.isNew()){
+            if (brand.getLabel() == null) brand.setLabel("favicon.ico");
             brandImpl.save(brand);
+        }
         else
             brandImpl.update(brand);
 
     }
 
     @DeleteMapping("/admin/{id}")
-    public ResponseEntity<Integer> delete(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<Integer> delete(@PathVariable Long id) throws NotFoundException, IOException {
         Integer deleted = brandImpl.delete(id);
         if (deleted == null)
             throw new NotFoundException("delete Brand not found");

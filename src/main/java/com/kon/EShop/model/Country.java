@@ -2,6 +2,7 @@ package com.kon.EShop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kon.EShop.HasId;
+import com.kon.EShop.NameUa;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,13 +16,13 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "country")
-public class Country implements HasId {
+public class Country implements HasId, NameUa {
     @Id
     @SequenceGenerator(name= "country_seq", sequenceName = "country_id_seq", allocationSize = 1, initialValue = 100)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="country_seq")
     private Long id;
 
-    @NotNull
+    @NotNull(message = "Поле название не должно быть пустым")
     private String name;
     @Column(name = "name_ua")
     private String nameUa;

@@ -2,8 +2,12 @@ package com.kon.EShop.controller;
 
 import com.kon.EShop.model.MainCategory;
 import com.kon.EShop.repository.impl.MainCategoryImpl;
+import com.kon.EShop.util.exception.NotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,12 +31,18 @@ public class MainCategoryController {
     }
 
     @DeleteMapping("/admin/{id}")
-    public Integer delete(@PathVariable Long id) {
+    public Integer delete(@PathVariable Long id) throws IOException {
         return repository.delete(id);
     }
 
     @PostMapping("/admin")
-    public MainCategory save(@RequestBody MainCategory mainCategory) {
+    public MainCategory save(@RequestBody @Valid MainCategory mainCategory) {
         return repository.save(mainCategory);
+    }
+
+    @PostMapping("/admin/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void enable(@PathVariable int id, @RequestParam boolean enabled) throws NotFoundException {
+        repository.enable(id, enabled);
     }
 }

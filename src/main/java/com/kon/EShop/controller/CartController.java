@@ -31,13 +31,13 @@ public class CartController {
         service.addForOrder(cart, session);
     }
 
-    @DeleteMapping("/admin/{id}")
+    @DeleteMapping("/manager/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public long deleteCart(@PathVariable Long id) throws NotFoundException {
         return service.delete(id);
     }
 
-    @PostMapping("/admin/{cartId}")
+    @PostMapping("/manager/{cartId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void updateByAdmin(@PathVariable(name = "cartId") Long id, @RequestBody List<CartProduct> products) {
         service.updateAdmin(id, products);
