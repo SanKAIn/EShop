@@ -1,0 +1,21 @@
+package com.kon.EShop.repository.filtersPack;
+
+import com.kon.EShop.model.filtersPack.Applicability;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+public interface ApplicabilityRepository extends JpaRepository<Applicability, Long> {
+    @Transactional
+    @Modifying
+    Integer deleteApplicabilitiesById(Long id);
+
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM applicability b WHERE b.id IN " +
+                    "(SELECT DISTINCT pb.appl_id FROM prod_appl pb WHERE pb.product_id IN " +
+                    "(SELECT m.product_id FROM prod_main m WHERE m.main_id = :id)) ORDER BY b.name")
+    List<Applicability> getAllByMain(Long id);
+}

@@ -17,12 +17,6 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<!--webjars-->
-		<webjars-bootstrap.version>4.4.1</webjars-bootstrap.version>
-		<webjars-jquery.version>3.4.1</webjars-jquery.version>
-		<webjars-datetimepicker.version>2.5.20</webjars-datetimepicker.version>
-		<webjars-noty.version>3.1.4</webjars-noty.version>
-		<webjars-datatables.version>1.10.20</webjars-datatables.version>
 	</properties>
 
 	<dependencies>
@@ -57,6 +51,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+			<version>2.4.0</version>
+		</dependency>
 													<!--		work with BD-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -66,10 +65,6 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
 		</dependency>
 
 		<dependency>
@@ -81,11 +76,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
-		</dependency>
-															<!--		For .jsp files work-->
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
 		</dependency>
 
 		<dependency>
@@ -109,62 +99,24 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+
         <dependency>
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
-			<version>20.1.0</version>
+			<version>22.0.0</version>
 			<scope>compile</scope>
         </dependency>
-		<!-- Webjars (static dependencies distributed as JAR files) -->
 		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>jquery</artifactId>
-			<version>${webjars-jquery.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>${webjars-bootstrap.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.webjars</groupId>
-					<artifactId>jquery</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>datatables</artifactId>
-			<version>${webjars-datatables.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.webjars</groupId>
-					<artifactId>jquery</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>datetimepicker</artifactId>
-			<version>${webjars-datetimepicker.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>jquery</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.webjars.bower</groupId>
-					<artifactId>php-date-formatter</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>noty</artifactId>
-			<version>${webjars-noty.version}</version>
+			<groupId>org.imgscalr</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+			<version>4.2</version>
 		</dependency>
     </dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -181,6 +133,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>shop</finalName>
 	</build>
 
 </project>

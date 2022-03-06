@@ -1,7 +1,7 @@
 package com.kon.EShop.service;
 
-import com.kon.EShop.model.Cart;
-import com.kon.EShop.model.CartProduct;
+import com.kon.EShop.model.cartPack.Cart;
+import com.kon.EShop.model.cartPack.CartProduct;
 import com.kon.EShop.repository.impl.CartImpl;
 import com.kon.EShop.repository.impl.ProductImpl;
 import com.kon.EShop.to.CartTo;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.kon.EShop.util.EntityUtil.cartAmountToProductsTo;
-import static com.kon.EShop.util.EntityUtil.productInProductTo;
+import static com.kon.EShop.util.EntityUtil.productToFromProduct;
 import static com.kon.EShop.util.SecurityUtil.idIfAuthUser;
 
 @Service
@@ -30,7 +30,7 @@ public class CartService {
 
    public CartTo get(Long id) {
       Cart curCart = cartImpl.getCart(id);
-      List<ProductTo> list = productInProductTo(productIml.listProductsForCart(curCart.getIds()));
+      List<ProductTo> list = productToFromProduct(productIml.listProductsForCart(curCart.getIds()));
       cartAmountToProductsTo(list, curCart);
       if (curCart.getUser_id() != null && curCart.isNew()) curCart = cartImpl.save(curCart);
       return new CartTo(curCart.getId(), list);

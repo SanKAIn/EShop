@@ -1,6 +1,6 @@
 package com.kon.EShop.repository;
 
-import com.kon.EShop.model.Cart;
+import com.kon.EShop.model.cartPack.Cart;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

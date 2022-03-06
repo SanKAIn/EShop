@@ -27,26 +27,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                    .antMatchers("/**/admin/**").hasRole("ADMIN")
-                    .antMatchers("/**/manager/**").hasAnyRole("MANAGER", "ADMIN")
-                    .antMatchers("/profile/**").hasAnyRole("USER", "ADMIN")
-                    .antMatchers("/**").permitAll()
-                    .antMatchers("/img/**", "/static/**").permitAll()
-                    .anyRequest().authenticated()
-                .and()
-                    .httpBasic()
-                .and()
-                    .formLogin()
-                        .loginPage("/login")
-                        .permitAll()
-                        .defaultSuccessUrl("/").failureUrl("/login?error")
-                .and()
-                    .logout()
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID");
+            .authorizeRequests()
+                .antMatchers("/**/admin/**").hasRole("ADMIN")
+                .antMatchers("/**/manager/**").hasAnyRole("MANAGER", "ADMIN")
+                .antMatchers("/**/profile/**").hasAnyRole("USER", "ADMIN", "MANAGER")
+                .antMatchers("/**").permitAll()
+                .antMatchers("/img/**", "/static/**").permitAll()
+                .anyRequest().authenticated()
+            .and()
+                .httpBasic()
+            .and()
+                .formLogin()
+                    .loginPage("/login")
+                    .permitAll()
+                    .defaultSuccessUrl("/").failureUrl("/login?error")
+            .and()
+                .logout()
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutSuccessUrl("/")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID");
     }
 
     @Override

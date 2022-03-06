@@ -2,9 +2,10 @@ package com.kon.EShop.service;
 
 import com.kon.EShop.MailSender;
 import com.kon.EShop.SendHTMLEmail;
-import com.kon.EShop.model.Orders;
-import com.kon.EShop.model.State;
+import com.kon.EShop.model.cartPack.Orders;
+import com.kon.EShop.model.cartPack.State;
 import com.kon.EShop.repository.impl.OrderImpl;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
@@ -41,7 +42,7 @@ public class OrderService {
       orderImpl.delete(id);
    }
 
-   public void save(Orders order, Long cartId) {
+   public void save(@NotNull Orders order, Long cartId) {
       order.setCartId(cartId);
       Orders newOrder = orderImpl.save(order);
       setToSession("orderId", newOrder.getId());
@@ -58,7 +59,7 @@ public class OrderService {
       mailSender.send("alfurm2@gmail.com", "Новый заказ", (order.getFullSum() * 1.0 / 100) + "грн");
    }
 
-   public void aUpdate(Orders order) {
+   public void aUpdate(@NotNull Orders order) {
       Orders orderB = orderImpl.get(order.getId());
       orderB.setName(order.getName());
       orderB.setAddress(order.getAddress());

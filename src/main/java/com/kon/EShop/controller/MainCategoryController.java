@@ -1,6 +1,6 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.MainCategory;
+import com.kon.EShop.model.filtersPack.MainCategory;
 import com.kon.EShop.repository.impl.MainCategoryImpl;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/maniCat")
+@RequestMapping("/mainCat")
 public class MainCategoryController {
 
     private final MainCategoryImpl repository;
@@ -31,6 +31,7 @@ public class MainCategoryController {
     }
 
     @DeleteMapping("/admin/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Integer delete(@PathVariable Long id) throws IOException {
         return repository.delete(id);
     }

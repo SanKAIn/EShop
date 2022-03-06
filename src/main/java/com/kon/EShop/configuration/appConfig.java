@@ -1,6 +1,7 @@
 package com.kon.EShop.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import java.util.Locale;
 
+@EnableCaching
 @Configuration
 public class appConfig implements WebMvcConfigurer {
     @Value("${upload.path}")

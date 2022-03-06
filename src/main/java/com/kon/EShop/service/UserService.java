@@ -1,11 +1,11 @@
 package com.kon.EShop.service;
 
 import com.kon.EShop.AuthorizedUser;
-import com.kon.EShop.model.Cart;
-import com.kon.EShop.model.CartProduct;
-import com.kon.EShop.model.User;
+import com.kon.EShop.model.cartPack.Cart;
+import com.kon.EShop.model.cartPack.CartProduct;
+import com.kon.EShop.model.userPack.User;
 import com.kon.EShop.repository.CartRepository;
-import com.kon.EShop.repository.UserRepository;
+import com.kon.EShop.repository.impl.UserImpl;
 import com.kon.EShop.to.UserTo;
 import com.kon.EShop.util.EntityUtil;
 import com.kon.EShop.util.exception.NotFoundException;
@@ -32,11 +32,11 @@ import static com.kon.EShop.util.ValidationUtil.*;
 @Log4j2
 public class UserService implements UserDetailsService {
 
-    private final UserRepository repository;
+    private final UserImpl repository;
     private final PasswordEncoder passwordEncoder;
     private final CartRepository cartRepository;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, CartRepository cartRepository) {
+    public UserService(UserImpl repository, PasswordEncoder passwordEncoder, CartRepository cartRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.cartRepository = cartRepository;
@@ -49,12 +49,13 @@ public class UserService implements UserDetailsService {
     }
 
     @CacheEvict(value = "users", allEntries = true)
-    public void delete(Long id) throws NotFoundException {
+    public Integer delete(Long id) throws NotFoundException {
         checkNotFoundWithId(repository.delete(id), id);
+        return 1;
     }
 
     public User get(Long id) throws NotFoundException {
-        return checkNotFoundWithId(repository.findById(id).orElse(null), id);
+        return checkNotFoundWithId(repository.get(id), id);
     }
 
     public User getByEmail(String email) throws NotFoundException {
@@ -64,13 +65,7 @@ public class UserService implements UserDetailsService {
 
     @Cacheable("users")
     public List<User> getAll() {
-        return repository.findAll();
-    }
-
-    @CacheEvict(value = "users", allEntries = true)
-    public User update(User user) {
-        Assert.notNull(user, "user must not be null");
-        return prepareAndSave(user);
+        return repository.getAll();
     }
 
     @CacheEvict(value = "users", allEntries = true)
@@ -79,7 +74,7 @@ public class UserService implements UserDetailsService {
         log.info("update {} with id={}", userTo, id);
         assureIdConsistent(userTo, id);
         User user = get(userTo.getId());
-        prepareAndSave(updateFromTo(user, userTo));
+        repository.save(updateFromTo(user, userTo));
     }
 
     @CacheEvict(value = "users", allEntries = true)

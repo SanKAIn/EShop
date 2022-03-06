@@ -1,7 +1,6 @@
 package com.kon.EShop.repository.impl;
 
 import com.kon.EShop.model.Shop;
-import com.kon.EShop.model.Unit;
 import com.kon.EShop.repository.ShopRepository;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.cache.annotation.CacheEvict;

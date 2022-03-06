@@ -2,7 +2,7 @@ package com.kon.EShop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kon.EShop.HasId;
-import lombok.Data;
+import com.kon.EShop.model.productPack.Product;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

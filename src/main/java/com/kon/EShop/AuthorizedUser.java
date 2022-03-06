@@ -1,6 +1,6 @@
 package com.kon.EShop;
 
-import com.kon.EShop.model.User;
+import com.kon.EShop.model.userPack.User;
 import com.kon.EShop.to.UserTo;
 import com.kon.EShop.util.UserUtil;
 

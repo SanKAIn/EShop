@@ -1,7 +1,7 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.Unit;
-import com.kon.EShop.repository.UnitRepository;
+import com.kon.EShop.model.filtersPack.Unit;
+import com.kon.EShop.repository.filtersPack.UnitRepository;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;

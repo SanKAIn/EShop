@@ -1,6 +1,6 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Manufacture;
+import com.kon.EShop.model.filtersPack.Manufacture;
 import com.kon.EShop.repository.impl.ManufactureImpl;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -25,11 +25,12 @@ public class ManufacturerController {
     }
 
     @GetMapping("/admin/{id}")
-    public Manufacture getManuf(@PathVariable Long id) {
+    public Manufacture getManufacturer(@PathVariable Long id) {
         return repository.get(id);
     }
 
     @DeleteMapping("/admin/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Integer delete(@PathVariable Long id) throws IOException {
         return repository.delete(id);
     }

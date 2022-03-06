@@ -1,6 +1,6 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Unit;
+import com.kon.EShop.model.filtersPack.Unit;
 import com.kon.EShop.repository.impl.UnitImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

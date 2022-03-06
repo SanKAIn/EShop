@@ -2,7 +2,7 @@ package com.kon.EShop.repository.impl;
 
 import com.kon.EShop.model.Comment;
 import com.kon.EShop.repository.CommentRepository;
-import com.kon.EShop.repository.UserRepository;
+import com.kon.EShop.repository.userPack.UserRepository;
 import com.kon.EShop.to.CommentTo;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;

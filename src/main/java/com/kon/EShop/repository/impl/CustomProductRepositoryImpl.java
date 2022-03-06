@@ -2,7 +2,6 @@ package com.kon.EShop.repository.impl;
 
 import com.kon.EShop.repository.CustomProductRepository;
 import com.kon.EShop.util.FileManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ public class CustomProductRepositoryImpl implements CustomProductRepository {
         this.template = template;
     }
 
-    public void queryWith(List<String> cols, String tableName) {
+    public void updCSV(List<String> cols, String tableName) {
         getColumnList(tableName);
         getNotNullColumns();
         try {

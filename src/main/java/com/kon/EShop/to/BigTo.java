@@ -1,12 +1,11 @@
 package com.kon.EShop.to;
 
-import com.kon.EShop.model.Product;
+import com.kon.EShop.model.productPack.Product;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static com.kon.EShop.util.EntityUtil.productInProductTo;
+import static com.kon.EShop.util.EntityUtil.productToFromProduct;
 
 public class BigTo {
     private List<Product> data = new ArrayList<>();

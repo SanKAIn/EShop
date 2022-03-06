@@ -1,7 +1,7 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Orders;
-import com.kon.EShop.model.State;
+import com.kon.EShop.model.cartPack.Orders;
+import com.kon.EShop.model.cartPack.State;
 import com.kon.EShop.service.OrderService;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +32,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/manager/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) throws NotFoundException {
         service.delete(id);
     }

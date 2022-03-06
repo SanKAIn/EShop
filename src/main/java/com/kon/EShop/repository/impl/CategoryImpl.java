@@ -1,7 +1,7 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.Category;
-import com.kon.EShop.repository.CategoryRepository;
+import com.kon.EShop.model.filtersPack.Category;
+import com.kon.EShop.repository.filtersPack.CategoryRepository;
 import com.kon.EShop.util.FileManager;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.data.domain.Sort;
@@ -78,7 +78,7 @@ public class CategoryImpl {
         }
         if (list2.size() > 0) {
             if (list2.get(0).getName().endsWith("Ач"))
-                list2.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getName().substring(0, o.getName().length() - 2))));
+                list2.sort(Comparator.comparingDouble(o -> Double.parseDouble(o.getName().substring(0, o.getName().length() - 2))));
             if (isDouble(list2.get(0).getName()))
                 list2.sort(Comparator.comparingDouble(o -> Double.parseDouble(o.getName())));
             if (list2.get(0).getName().startsWith("М") && list2.get(0).getName().length() <= 3)

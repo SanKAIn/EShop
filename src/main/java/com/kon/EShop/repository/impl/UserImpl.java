@@ -1,7 +1,7 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.User;
-import com.kon.EShop.repository.UserRepository;
+import com.kon.EShop.model.userPack.User;
+import com.kon.EShop.repository.userPack.UserRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 

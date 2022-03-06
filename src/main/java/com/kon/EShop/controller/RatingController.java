@@ -1,9 +1,8 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Product;
+import com.kon.EShop.model.productPack.Product;
 import com.kon.EShop.model.Rating;
-import com.kon.EShop.repository.impl.ProductImpl;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.kon.EShop.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -14,16 +13,16 @@ import java.util.List;
 @RequestMapping("/profile/rating")
 public class RatingController {
 
-    private final ProductImpl productImpl;
+    private final ProductService productService;
 
-    public RatingController(ProductImpl product) {
-        this.productImpl = product;
+    public RatingController(ProductService productService) {
+        this.productService = productService;
     }
 
     @PutMapping("/{id}")
     public Rating voteP(@PathVariable Long id, @RequestParam Integer vote, HttpSession session) {
         List<Long> list = (List<Long>) session.getAttribute("votes");
-        Product p = productImpl.findById(id);
+        Product p = productService.findById(id);
         if (list == null || !list.contains(id)) {
             if (list == null) list = new ArrayList<>();
             if (p.getRating() == null) p.setRating(new Rating(0, 0, p));
@@ -31,7 +30,7 @@ public class RatingController {
             p.getRating().setVotes(p.getRating().getVotes() + 1);
             p.getRating().setRating(bal / p.getRating().getVotes());
             p.getRating().setMessage("Голос защитан");
-            productImpl.save(p);
+            productService.save(p);
             list.add(id);
             session.setAttribute("votes", list);
             return p.getRating();

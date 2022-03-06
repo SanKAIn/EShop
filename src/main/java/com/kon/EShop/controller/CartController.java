@@ -1,6 +1,6 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.CartProduct;
+import com.kon.EShop.model.cartPack.CartProduct;
 import com.kon.EShop.service.CartService;
 import com.kon.EShop.to.CartTo;
 import com.kon.EShop.util.exception.NotFoundException;

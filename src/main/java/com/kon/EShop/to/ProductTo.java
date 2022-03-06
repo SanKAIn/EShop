@@ -3,6 +3,9 @@ package com.kon.EShop.to;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kon.EShop.model.*;
+import com.kon.EShop.model.filtersPack.*;
+import com.kon.EShop.model.productPack.Analog;
+import com.kon.EShop.model.productPack.ProductPhoto;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -38,6 +41,12 @@ public class ProductTo implements Serializable {
     private Manufacture manufacture;
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Unit unit;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Set<Analog> analogs;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Set<Analog> passing;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Set<Applicability> applicability;
 
     public ProductTo() {
     }

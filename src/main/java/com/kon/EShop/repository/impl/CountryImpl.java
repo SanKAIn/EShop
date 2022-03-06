@@ -1,8 +1,8 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.Country;
-import com.kon.EShop.repository.CountryRepository;
-import org.springframework.data.domain.Pageable;
+import com.kon.EShop.model.filtersPack.Country;
+import com.kon.EShop.repository.filtersPack.CountryRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,6 +32,6 @@ public class CountryImpl {
     }
 
     public List<Country> getAll() {
-        return repository.findAll();
+        return repository.findAll(Sort.by("name"));
     }
 }

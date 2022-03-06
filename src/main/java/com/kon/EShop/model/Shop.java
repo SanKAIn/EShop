@@ -4,6 +4,7 @@ import com.kon.EShop.HasId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Table(name = "shops")
 @Getter @Setter
+@DynamicUpdate
 public class Shop implements HasId {
     @Id
     @SequenceGenerator(name= "shop_seq", sequenceName = "shop_id_seq", allocationSize = 1, initialValue = 100)

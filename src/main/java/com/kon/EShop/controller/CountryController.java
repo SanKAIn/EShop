@@ -1,7 +1,8 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Country;
+import com.kon.EShop.model.filtersPack.Country;
 import com.kon.EShop.repository.impl.CountryImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,6 +29,7 @@ public class CountryController {
     }
 
     @DeleteMapping("/admin/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Integer delete(@PathVariable Long id) {
         return repository.delete(id);
     }

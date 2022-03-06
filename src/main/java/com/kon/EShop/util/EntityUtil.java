@@ -1,17 +1,13 @@
 package com.kon.EShop.util;
 
-import com.kon.EShop.HasId;
-import com.kon.EShop.NameUa;
-import com.kon.EShop.model.Cart;
+import com.kon.EShop.model.BaseEntity;
 import com.kon.EShop.model.Comment;
-import com.kon.EShop.model.Product;
-import com.kon.EShop.repository.CartRepository;
+import com.kon.EShop.model.cartPack.Cart;
+import com.kon.EShop.model.productPack.PhotoOnlyURL;
+import com.kon.EShop.model.productPack.Product;
 import com.kon.EShop.repository.impl.CartImpl;
-import com.kon.EShop.to.BigTo;
 import com.kon.EShop.to.CommentTo;
 import com.kon.EShop.to.ProductTo;
-import org.hibernate.proxy.HibernateProxy;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,8 +18,9 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.kon.EShop.util.SecurityUtil.idIfAuthUser;
@@ -32,40 +29,50 @@ public class EntityUtil {
     public EntityUtil() {
     }
 
-    public static void checkNameUA(NameUa entity) {
+    public static void checkNameUA(BaseEntity<?> entity) {
         if (entity.getNameUa() == null) entity.setNameUa(entity.getName());
     }
 
-    public static Product productFromTo(ProductTo pT) {
-        Product p = new Product();
-        p.setId(pT.getId());
-        p.setName(pT.getName());
-        p.setNameUa(pT.getNameUa());
-        p.setVendor(pT.getVendor());
-        p.setPopular(pT.getPopular());
-        p.setDescription(pT.getDescription());
-        p.setDescriptionUa(pT.getDescriptionUa());
-        p.setSearch(pT.getSearch().toLowerCase());
-        p.setAmount(pT.getAmount());
-        p.setPrice(pT.getPrice());
-        p.setPhotos(pT.getPhotos());
-        p.setBrand(pT.getBrand());
-        p.setRating(pT.getRating());
-        p.setCategory(pT.getCategory());
-        p.setMainCategory(pT.getMainCategory());
-        p.setManufacture(pT.getManufacture());
-        p.setUnit(pT.getUnit());
-        return p;
+    public static Set<String> getPhotoTo(Set<PhotoOnlyURL> list) {
+        Set<String> urls = new HashSet<>();
+        for (PhotoOnlyURL f: list) {
+            urls.add(f.getUrl());
+        }
+        return urls;
     }
 
-    public static List<ProductTo> productInProductTo(List<Product> products) {
+    public static Product productFromTo(ProductTo pT) {
+        return new Product(
+                pT.getId(),
+                pT.getName(),
+                pT.getNameUa(),
+                pT.getVendor(),
+                pT.getPopular(),
+                pT.getDescription(),
+                pT.getDescriptionUa(),
+                pT.getSearch().toLowerCase(),
+                pT.getAmount(),
+                pT.getPrice(),
+                pT.getPhotos(),
+                pT.getBrand(),
+                pT.getRating(),
+                pT.getCategory(),
+                pT.getMainCategory(),
+                pT.getManufacture(),
+                pT.getUnit(),
+                pT.getAnalogs(),
+                pT.getPassing(),
+                pT.getApplicability());
+    }
+
+    public static List<ProductTo> productToFromProduct(List<Product> products) {
         return products
                 .stream()
-                .map(EntityUtil::productInProductTo)
+                .map(EntityUtil::productToFromProduct)
                 .collect(Collectors.toList());
     }
 
-    public static ProductTo productInProductTo(Product product) {
+    public static ProductTo productToFromProduct(Product product) {
         ProductTo to = new ProductTo();
         to.setId(product.getId());
         to.setName(product.getName());
@@ -85,10 +92,11 @@ public class EntityUtil {
         if (pu.isLoaded(product.getMainCategory())) to.setMainCategory(product.getMainCategory());
         if (pu.isLoaded(product.getManufacture())) to.setManufacture(product.getManufacture());
         if (pu.isLoaded(product.getUnit())) to.setUnit(product.getUnit());
+        if (pu.isLoaded(product.getAnalog())) to.setAnalogs(product.getAnalog());
+        if (pu.isLoaded(product.getPassing())) to.setPassing(product.getPassing());
+        if (pu.isLoaded(product.getApplicability())) to.setApplicability(product.getApplicability());
         return to;
     }
-
-
 
     public static CommentTo getCommentTo(Comment comment) {
         CommentTo commentTo = new CommentTo();
@@ -137,10 +145,6 @@ public class EntityUtil {
         return PageRequest.of(p, o, sort1);
     }
 
-//    public static BigTo getBigTo(Page<Product> page) {
-//        return new BigTo(page.getContent(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
-//    }
-
     public static Cart getCartFromSession() {
         Cart curCart = getFromSession("cart", Cart.class);
         if (curCart == null){
@@ -154,7 +158,6 @@ public class EntityUtil {
 
     public static Cart getCartFromSession(CartImpl repo) {
         Cart curCart = getFromSession("cart", Cart.class);
-//        Cart curCart = (Cart) session.getAttribute("cart");
         if (curCart == null && idIfAuthUser() != null)
             curCart = repo.getByUser(idIfAuthUser());
         if (curCart == null){

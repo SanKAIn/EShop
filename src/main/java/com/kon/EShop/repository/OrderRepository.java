@@ -1,7 +1,7 @@
 package com.kon.EShop.repository;
 
-import com.kon.EShop.model.Orders;
-import com.kon.EShop.model.State;
+import com.kon.EShop.model.cartPack.Orders;
+import com.kon.EShop.model.cartPack.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

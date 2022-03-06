@@ -1,7 +1,7 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.Cart;
-import com.kon.EShop.model.CartProduct;
+import com.kon.EShop.model.cartPack.Cart;
+import com.kon.EShop.model.cartPack.CartProduct;
 import com.kon.EShop.repository.CartProductRepository;
 import com.kon.EShop.repository.CartRepository;
 import org.springframework.stereotype.Repository;

@@ -1,9 +1,14 @@
 package com.kon.EShop.controller;
 
-import com.kon.EShop.model.Orders;
-import com.kon.EShop.model.Product;
-import com.kon.EShop.model.Role;
+import com.kon.EShop.model.cartPack.Orders;
+import com.kon.EShop.model.productPack.Catalog;
+import com.kon.EShop.model.productPack.Product;
+import com.kon.EShop.model.userPack.Role;
 import com.kon.EShop.repository.impl.*;
+import com.kon.EShop.service.BrandService;
+import com.kon.EShop.service.ProductService;
+import com.kon.EShop.util.EntityUtil;
+import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,34 +20,34 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
-
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.kon.EShop.util.EntityUtil.getPageable;
-import static com.kon.EShop.util.EntityUtil.productInProductTo;
-
+@Log
 @Controller
 public class MainController {
 
-    private final ProductImpl productImpl;
-    private final BrandImpl brandImpl;
+    private final ProductService productService;
+    private final BrandService brandServ;
     private final CategoryImpl catImpl;
     private final MainCategoryImpl mainCategoryImpl;
     private final ManufactureImpl manufacture;
     private final OrderImpl orderS;
     private final ShopImpl shopImpl;
+    private final ApplicabilityIml applicabilityIml;
 
-    public MainController(ProductImpl productImpl, BrandImpl brandImpl, CategoryImpl catImpl,
-                          MainCategoryImpl mainCategoryImpl, ManufactureImpl manufacture, OrderImpl orderS, ShopImpl shopImpl) {
-        this.productImpl = productImpl;
-        this.brandImpl = brandImpl;
+    public MainController(ProductService productService, BrandService brandServ, CategoryImpl catImpl,
+                          MainCategoryImpl mainCategoryImpl, ManufactureImpl manufacture, OrderImpl orderS, ShopImpl shopImpl, ApplicabilityIml applicabilityIml) {
+        this.productService = productService;
+        this.brandServ = brandServ;
         this.catImpl = catImpl;
         this.mainCategoryImpl = mainCategoryImpl;
         this.manufacture = manufacture;
         this.orderS = orderS;
         this.shopImpl = shopImpl;
+        this.applicabilityIml = applicabilityIml;
     }
 
     @GetMapping("/favicon.ico")
@@ -53,7 +58,9 @@ public class MainController {
 
     @GetMapping("/")
     public String getRoot(Model model) {
+        Date date = new Date();
         model.addAttribute("cards", mainCategoryImpl.getAll());
+        log.info("---->  End loading index.html " + (new Date().getTime() - date.getTime()) + "ms");
         return "index";
     }
 
@@ -76,11 +83,14 @@ public class MainController {
                              @RequestParam(required = false) Long id,
                              @RequestParam(required = false) String name) {
         if (id != null) session.setAttribute("mainCategory", id);
-        Page<Product> products = productImpl.allU(getPageable(1, 12, Sort.by("name")), (Long) session.getAttribute("mainCategory"));
+        Date date = new Date();
+        Page<Catalog> products = productService.allC(getPageable(1, 12, Sort.by("p2.name")), (Long) session.getAttribute("mainCategory"));
+
         model.addAttribute("name", name);
-        model.addAttribute("brands", brandImpl.getAll());
+        model.addAttribute("brands", brandServ.getAll(id));
         model.addAttribute("categories", catImpl.getAll());
-        model.addAttribute("manuf", manufacture.getAll());
+        model.addAttribute("manuf", manufacture.getAll(id));
+        model.addAttribute("primen", applicabilityIml.getAll(id));
         model.addAttribute("cards", products);
         model.addAttribute("startEl", products.getNumber() * products.getSize());
         model.addAttribute("size", products.getSize());
@@ -94,21 +104,29 @@ public class MainController {
                     .collect(Collectors.toList());
             model.addAttribute("pageNumbers", pageNumbers);
         }
+        log.info("---->  End loading catalog.html " + (new Date().getTime() - date.getTime()) + "ms");
         return "catalog";
     }
 
     @GetMapping("/order")
     public String getOrder(Model model) {
-        Orders order = new Orders();
-        model.addAttribute("order", order);
+        model.addAttribute("order", new Orders());
         model.addAttribute("shop", shopImpl.getAll());
         return "order";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/analytic")
+    public String getAnalytic() {
+        return "analytical";
+    }
+
     @GetMapping("/one/{id}")
     public String getOne(@PathVariable Long id, Model model) {
-        Product one = productImpl.findById(id);
-        if (one != null) model.addAttribute("product", productInProductTo(one));
+        Date date = new Date();
+        Product one = productService.byId(id);
+        if (one != null) model.addAttribute("product", EntityUtil.productToFromProduct(one));
+        log.info("---->  End loading single.html " + (new Date().getTime() - date.getTime()) + "ms");
         return "single";
     }
 

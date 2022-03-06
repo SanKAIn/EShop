@@ -22,16 +22,11 @@ public class SendHTMLEmail {
 
     public void send(String emailTo, String subject, String content) {
         try {
-            // Set From: header field of the header.
             message.setFrom(new InternetAddress(userName));
-            // Set To: header field of the header.
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailTo));
-            // Set Subject: header field
             message.setSubject(subject);
-            // Send the actual HTML message, as big as you like
             message.setContent(content, "text/html; charset=UTF-8");
 
-            // Send message
             Transport.send(message);
             System.out.println("Sent message successfully....");
         } catch (MessagingException e) {

@@ -1,12 +1,11 @@
 package com.kon.EShop.repository;
 
-import com.kon.EShop.model.CartProduct;
+import com.kon.EShop.model.cartPack.CartProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 public interface CartProductRepository extends JpaRepository<CartProduct, Long> {
     @Transactional(propagation = Propagation.REQUIRED)

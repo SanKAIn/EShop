@@ -1,7 +1,7 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.Orders;
-import com.kon.EShop.model.State;
+import com.kon.EShop.model.cartPack.Orders;
+import com.kon.EShop.model.cartPack.State;
 import com.kon.EShop.repository.OrderRepository;
 import com.kon.EShop.util.exception.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;

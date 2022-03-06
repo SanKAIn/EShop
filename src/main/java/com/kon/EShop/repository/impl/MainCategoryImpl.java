@@ -1,10 +1,11 @@
 package com.kon.EShop.repository.impl;
 
-import com.kon.EShop.model.Brand;
-import com.kon.EShop.model.MainCategory;
-import com.kon.EShop.repository.MainCategoryRepository;
+import com.kon.EShop.model.filtersPack.MainCategory;
+import com.kon.EShop.repository.filtersPack.MainCategoryRepository;
 import com.kon.EShop.util.FileManager;
 import com.kon.EShop.util.exception.NotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
@@ -25,17 +26,19 @@ public class MainCategoryImpl {
         this.fileManager = fileManager;
     }
 
+    @Cacheable("mainCat")
     public List<MainCategory> getAll() {
         return  repository.findAll(Sort.by("name"));
     }
 
+    @CacheEvict(value = "mainCat", allEntries = true)
     public MainCategory save(MainCategory mainCategory) {
         if (mainCategory.getLabel() == null) mainCategory.setLabel("favicon.ico");
-        if (mainCategory.getNameUa() == null) mainCategory.setNameUa(mainCategory.getName());
         checkNameUA(mainCategory);
         return repository.save(mainCategory);
     }
 
+    @CacheEvict(value = "mainCat", allEntries = true)
     public Integer delete(Long id) throws IOException {
         fileManager.delLabel(repository.findById(id).orElse(null));
         return repository.delete(id);
@@ -45,9 +48,10 @@ public class MainCategoryImpl {
         return repository.findById(id).orElse(null);
     }
 
+    @CacheEvict(value = "mainCat", allEntries = true)
     public void enable(long id, boolean enabled) throws NotFoundException {
         MainCategory mainCategory = checkNotFoundWithId(get(id), id);
-        mainCategory.setVisible(enabled);
+        mainCategory.setPopular(enabled);
         repository.save(mainCategory);
     }
 }
